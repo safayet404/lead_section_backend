@@ -24,4 +24,6 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function (){
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function (){
     Route::post("/create-branch",[BranchController::class, "CreateBranch"]);
+    Route::get("/branch-list",[BranchController::class, "BranchList"]);
+    Route::post("/branch-update",[BranchController::class, "BranchUpdate"]);
 });

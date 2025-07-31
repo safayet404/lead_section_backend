@@ -29,4 +29,41 @@ class BranchController extends Controller
              return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
+
+    function BranchList(Request $request)
+    {
+        $list = Branch::all();
+
+        return response()->json([
+            'status' => 'Request Success',
+            'list' => $list
+        ]);
+    }
+
+    public function BranchUpdate(Request $request)
+{
+    try {
+        $id = $request->input('id');
+        $name = $request->input('name');
+
+        $branch = Branch::find($id);
+
+        if ($branch) {
+            $branch->update(['name' => $name]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Branch updated successfully'
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Branch not found'
+            ]);
+        }
+    } catch (Exception $e) {
+        return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+    }
+}
+
 }
