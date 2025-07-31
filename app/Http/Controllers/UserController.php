@@ -71,5 +71,24 @@ class UserController extends Controller
         ])->cookie('token','',-1);
     }
 
+    function ResetPassword(Request $request)
+    {
+        try {
+            $email = $request->input('email');
+            $password = $request->input('password');
+            $hashedPassword = Hash::make($password);
+
+            $userCount = User::where('email','=',$email)->first();
+
+            if($userCount)
+            {
+                User::where('email','=',$email)->update(['password' => $hashedPassword]);
+            }
+            return response()->json(['status' => 'success','message' => "Password update successfully"]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+        }
+    }
+
 
 }

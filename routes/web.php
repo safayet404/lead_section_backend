@@ -11,3 +11,4 @@ Route::post('/test', function () {
 Route::post('/registration',[UserController::class, 'UserRegistration']);
 Route::post('/login',[UserController::class, 'UserLogin']);
 Route::post('/logout',[UserController::class, 'UserLogout']);
+Route::post('/reset-password',[UserController::class, 'ResetPassword']);
