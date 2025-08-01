@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-             Schema::create('leads', function (Blueprint $table) {
+        Schema::create('leads', function (Blueprint $table) {
             $table->id();
-            $table->date("lead_date");
-            $table->string("email");
-            $table->string("name");
-            $table->string("phone");
-            $table->string("interested_course");
-            $table->string("interested_country");
-            $table->string("current_qualification");
-            $table->string("ielts_or_english_test")->nullable();
-            $table->string("soruce")->nullable();
-            $table->foreignId("status_id")->nullable()->constrained('lead_statues')->cascadeOnUpdate()->restrictOnDelete();
+            $table->date('lead_date');
+            $table->string('email');
+            $table->string('name');
+            $table->string('phone');
+            $table->string('interested_course');
+            $table->string('interested_country');
+            $table->string('current_qualification');
+            $table->string('ielts_or_english_test')->nullable();
+            $table->string('soruce')->nullable();
+            $table->foreignId('status_id')->nullable()->constrained('lead_statues')->cascadeOnUpdate()->restrictOnDelete();
             $table->text('notes')->nullable();
             $table->foreignId('assigned_branch')->nullable()->constrained('branches')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('assigned_user')->nullable()->constrained('users')->cascadeOnUpdate()->restrictOnDelete();

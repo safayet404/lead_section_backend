@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LeadStatus extends Model
 {
-        protected $table = 'lead_statues';
+    protected $table = 'lead_statues';
 
-        protected $fillable = ['name'];
-
+    protected $fillable = ['name'];
 }

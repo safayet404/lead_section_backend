@@ -8,62 +8,81 @@ use Illuminate\Http\Request;
 
 class BranchController extends Controller
 {
-    function CreateBranch(Request $request)
+    public function CreateBranch(Request $request)
     {
-        
+
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:25'
+                'name' => 'required|string|max:25',
             ]);
-    
+
             Branch::create([
-                'name' => $validated['name']
+                'name' => $validated['name'],
             ]);
-    
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Branch Created successfully'
+                'message' => 'Branch Created successfully',
             ]);
-            
+
         } catch (Exception $e) {
-             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
-    function BranchList(Request $request)
+    public function BranchList(Request $request)
     {
         $list = Branch::all();
 
         return response()->json([
             'status' => 'Request Success',
-            'list' => $list
+            'list' => $list,
         ]);
     }
 
     public function BranchUpdate(Request $request)
-{
-    try {
-        $id = $request->input('id');
-        $name = $request->input('name');
+    {
+        try {
+            $id = $request->input('id');
+            $name = $request->input('name');
 
-        $branch = Branch::find($id);
+            $branch = Branch::find($id);
 
-        if ($branch) {
-            $branch->update(['name' => $name]);
+            if ($branch) {
+                $branch->update(['name' => $name]);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Branch updated successfully'
-            ]);
-        } else {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Branch not found'
-            ]);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Branch updated successfully',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'Branch not found',
+                ]);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
-    } catch (Exception $e) {
-        return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
     }
-}
 
+    public function BranchDelete(Request $request)
+    {
+        try {
+            $id = $request->id;
+            $branch = Branch::where('id',$id)->first();
+
+            if($branch)
+            {
+                $branch->delete();
+            }
+            else
+            {
+                 return response()->json(['status' => 'failed', 'message'=> 'This branch is not availabe']);
+            }
+            return response()->json(['status' => 'success', 'message'=> 'Branch deleted successfully']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+        }
+    }
 }
