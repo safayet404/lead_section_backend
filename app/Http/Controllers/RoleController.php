@@ -50,7 +50,11 @@ class RoleController extends Controller
             $role = Role::find($id);
     
             $data = $request->only(['name']);
-            $role->fill($data)->save();
+            if($role)
+            {
+
+                $role->fill($data)->save();
+            }
 
             return response()->json(['status' => 'success', 'message' => 'Role Updated']);
             

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
@@ -37,3 +38,13 @@ Route::get('/role-list',[RoleController::class, 'RoleList']);
 Route::get('/single-role',[RoleController::class, 'SingleRole']);
 Route::post('/role-update',[RoleController::class, 'RoleUpdate']);
 Route::delete('/role-delete',[RoleController::class, 'RoleDelete']);
+
+// Lead Status
+
+Route::middleware([TokenVerificationMiddleware::class])->group(function () {
+    Route::post('/create-status', [LeadStatusController::class, 'CreateLeadStatus']);
+    Route::get('/status-list', [LeadStatusController::class, 'LeadStatusList']);
+    Route::post('/status-update', [LeadStatusController::class, 'LeadStatusUpdate']);
+    Route::delete('/status-delete', [LeadStatusController::class, 'LeadStatusDelete']);
+    Route::get('/single-status', [LeadStatusController::class, 'SingleLeadStatus']);
+});
