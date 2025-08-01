@@ -18,7 +18,7 @@ class UserController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'mobile' => 'required|string|max:50',
                 'password' => 'required|string|min:6',
-                'role' => 'required|string',
+                'role_id' => 'required|exists:roles,id',
 
             ]);
 
@@ -27,7 +27,7 @@ class UserController extends Controller
                 'email' => $validated['email'],
                 'mobile' => $validated['mobile'],
                 'password' => $validated['password'],
-                'role' => $validated['role'],
+                'role_id' => $validated['role_id'],
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'User Registration Successfull']);
@@ -40,13 +40,14 @@ class UserController extends Controller
 
     public function UserLogin(Request $request)
     {
-        $email = $request->input('email');
+       try {
+         $email = $request->input('email');
         $password = $request->input('password');
 
-        $user = User::where('email', $email)->select('id', 'password', 'role')->first();
+        $user = User::where('email', $email)->select('id', 'password', 'role_id')->first();
 
         if ($user && Hash::check($password, $user->password)) {
-            $token = JWTToken::CreateToken($email, $user->id, $user->role);
+            $token = JWTToken::CreateToken($email, $user->id, $user->role_id);
 
             return response()->json([
                 'status' => 'success',
@@ -59,6 +60,15 @@ class UserController extends Controller
                 'message' => 'unauthorized',
             ]);
         }
+       } catch (Exception $e) {
+        return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+       }
+    }
+
+    public function UserList(Request $request)
+    {
+        $list = User::all();
+        return response()->json(['status' => 'success', 'list' => $list]);
     }
 
     public function UserLogout(Request $request)

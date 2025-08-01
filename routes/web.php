@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
+use App\Models\Role;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/test', function () {
@@ -13,6 +15,7 @@ Route::post('/registration', [UserController::class, 'UserRegistration']);
 Route::post('/login', [UserController::class, 'UserLogin']);
 Route::post('/logout', [UserController::class, 'UserLogout']);
 Route::post('/reset-password', [UserController::class, 'ResetPassword']);
+Route::get('/user-list', [UserController::class, 'UserList']);
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('profile', [UserController::class, 'UserProfile']);
@@ -25,4 +28,12 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('/branch-list', [BranchController::class, 'BranchList']);
     Route::post('/branch-update', [BranchController::class, 'BranchUpdate']);
     Route::delete('/branch-delete', [BranchController::class, 'BranchDelete']);
+    Route::get('/single-branch', [BranchController::class, 'SingleBranch']);
 });
+
+// Role
+Route::post('/create-role',[RoleController::class, 'CreateRole']);
+Route::get('/role-list',[RoleController::class, 'RoleList']);
+Route::get('/single-role',[RoleController::class, 'SingleRole']);
+Route::post('/role-update',[RoleController::class, 'RoleUpdate']);
+Route::delete('/role-delete',[RoleController::class, 'RoleDelete']);

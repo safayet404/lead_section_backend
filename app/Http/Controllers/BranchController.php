@@ -78,11 +78,23 @@ class BranchController extends Controller
             }
             else
             {
-                 return response()->json(['status' => 'failed', 'message'=> 'This branch is not availabe']);
+                 return response()->json(['status' => 'failed', 'message'=> 'This branch is not']);
             }
             return response()->json(['status' => 'success', 'message'=> 'Branch deleted successfully']);
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+        }
+    }
+
+    public function SingleBranch(Request $request)
+    {
+        try {
+            $id = $request->id;
+
+            $branch = Branch::where('id',$id)->first();
+            return response()->json(['status' => 'success', 'list' => $branch]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 'failed' , 'message' => $e->getMessage()]);
         }
     }
 }
