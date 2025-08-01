@@ -25,7 +25,7 @@ class TokenVerificationMiddleware
         } else {
             $request->headers->set('email', $result->userEmail);
             $request->headers->set('id', $result->userID);
-            $request->headers->set('id', $result->role);
+            $request->headers->set('role', $result->role);
 
             return $next($request);
         }
