@@ -20,6 +20,6 @@ class Lead extends Model
         'notes',
         'assigned_branch',
         'assigned_user',
-        'created_by'
+        'created_by',
     ];
 }

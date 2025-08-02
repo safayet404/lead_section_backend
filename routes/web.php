@@ -34,11 +34,11 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 });
 
 // Role
-Route::post('/create-role',[RoleController::class, 'CreateRole']);
-Route::get('/role-list',[RoleController::class, 'RoleList']);
-Route::get('/single-role',[RoleController::class, 'SingleRole']);
-Route::post('/role-update',[RoleController::class, 'RoleUpdate']);
-Route::delete('/role-delete',[RoleController::class, 'RoleDelete']);
+Route::post('/create-role', [RoleController::class, 'CreateRole']);
+Route::get('/role-list', [RoleController::class, 'RoleList']);
+Route::get('/single-role', [RoleController::class, 'SingleRole']);
+Route::post('/role-update', [RoleController::class, 'RoleUpdate']);
+Route::delete('/role-delete', [RoleController::class, 'RoleDelete']);
 
 // Lead Status
 
@@ -50,13 +50,12 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('/single-status', [LeadStatusController::class, 'SingleLeadStatus']);
 });
 
-
-// Lead 
+// Lead
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-lead', [LeadController::class, 'CreateLead']);
-    Route::get('/status-list', [LeadStatusController::class, 'LeadStatusList']);
-    Route::post('/status-update', [LeadStatusController::class, 'LeadStatusUpdate']);
-    Route::delete('/status-delete', [LeadStatusController::class, 'LeadStatusDelete']);
-    Route::get('/single-status', [LeadStatusController::class, 'SingleLeadStatus']);
+    Route::get('/lead-list', [LeadController::class, 'LeadList']);
+    Route::post('/lead-update', [LeadController::class, 'LeadUpdate']);
+    Route::delete('/lead-delete', [LeadController::class, 'DeleteLead']);
+    Route::get('/single-lead', [LeadController::class, 'SingleLead']);
 });

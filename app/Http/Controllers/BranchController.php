@@ -70,17 +70,15 @@ class BranchController extends Controller
     {
         try {
             $id = $request->id;
-            $branch = Branch::where('id',$id)->first();
+            $branch = Branch::where('id', $id)->first();
 
-            if($branch)
-            {
+            if ($branch) {
                 $branch->delete();
+            } else {
+                return response()->json(['status' => 'failed', 'message' => 'This branch is not']);
             }
-            else
-            {
-                 return response()->json(['status' => 'failed', 'message'=> 'This branch is not']);
-            }
-            return response()->json(['status' => 'success', 'message'=> 'Branch deleted successfully']);
+
+            return response()->json(['status' => 'success', 'message' => 'Branch deleted successfully']);
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
@@ -91,10 +89,11 @@ class BranchController extends Controller
         try {
             $id = $request->id;
 
-            $branch = Branch::where('id',$id)->first();
+            $branch = Branch::where('id', $id)->first();
+
             return response()->json(['status' => 'success', 'list' => $branch]);
         } catch (Exception $e) {
-            return response()->json(['status' => 'failed' , 'message' => $e->getMessage()]);
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 }
