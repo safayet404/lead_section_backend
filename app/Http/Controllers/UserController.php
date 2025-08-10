@@ -38,32 +38,47 @@ class UserController extends Controller
         }
     }
 
-    public function UserLogin(Request $request)
-    {
-        try {
-            $email = $request->input('email');
-            $password = $request->input('password');
+public function UserLogin(Request $request)
+{
+    try {
+        $email = $request->input('email');
+        $password = $request->input('password');
 
-            $user = User::where('email', $email)->select('id', 'password', 'role_id')->first();
+        $user = User::where('email', $email)->select('id', 'password', 'role_id')->first();
 
-            if ($user && Hash::check($password, $user->password)) {
-                $token = JWTToken::CreateToken($email, $user->id, $user->role_id);
+        if ($user && Hash::check($password, $user->password)) {
+            $token = JWTToken::CreateToken($email, $user->id, $user->role_id);
 
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'User Login Successfull',
-                    'token' => $token,
-                ])->cookie('token', $token, 60 * 24 * 30);
-            } else {
-                return response()->json([
-                    'status' => 'failed',
-                    'message' => 'unauthorized',
-                ]);
-            }
-        } catch (Exception $e) {
-            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+            $response = response()->json([
+                'status' => 'success',
+                'message' => 'User Login Successful'
+            ]);
+
+            // Set cookie with explicit localhost domain
+            $response->cookie(
+                'token',
+                $token,
+                60 * 24 * 30,      // minutes
+                '/',               // path
+                'localhost',       // domain - explicitly set to localhost
+                false,             // secure
+                true,              // httpOnly
+                false,             // raw
+                'Lax'              // sameSite
+            );
+
+            return $response;
+
+        } else {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'unauthorized',
+            ]);
         }
+    } catch (Exception $e) {
+        return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
     }
+}
 
     public function UserList(Request $request)
     {
