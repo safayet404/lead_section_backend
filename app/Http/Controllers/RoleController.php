@@ -26,7 +26,7 @@ class RoleController extends Controller
 
     public function RoleList(Request $request)
     {
-        $list = Role::all();
+        $list = Role::withCount('users')->get();
 
         return response()->json(['status' => 'success', 'list' => $list]);
     }
