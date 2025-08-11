@@ -117,7 +117,7 @@ public function UserLogin(Request $request)
     public function UserProfile(Request $request)
     {
         $email = $request->header('email');
-        $user = User::where('email', $email)->first();
+        $user = User::with('role')->where('email', $email)->first();
 
         return response()->json([
             'status' => 'success',
