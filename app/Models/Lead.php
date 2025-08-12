@@ -22,4 +22,19 @@ class Lead extends Model
         'assigned_user',
         'created_by',
     ];
+
+    public function status()
+    {
+        return $this->belongsTo(LeadStatus::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'assigned_user');
+    }  public function branch()
+    {
+        return $this->belongsTo(Branch::class,'assigned_branch');
+    }
+
+   
 }

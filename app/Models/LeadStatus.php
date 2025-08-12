@@ -9,4 +9,6 @@ class LeadStatus extends Model
     protected $table = 'lead_statues';
 
     protected $fillable = ['name'];
+
+    
 }
