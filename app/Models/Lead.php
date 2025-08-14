@@ -21,6 +21,8 @@ class Lead extends Model
         'assigned_branch',
         'assigned_user',
         'created_by',
+        'event_id',
+        'lead_type'
     ];
 
     public function status()
@@ -34,6 +36,15 @@ class Lead extends Model
     }  public function branch()
     {
         return $this->belongsTo(Branch::class,'assigned_branch');
+    }
+
+    public function type()
+    {
+        return $this->belongsTo(LeadType::class,'lead_type');
+    }
+
+    public function event()  {
+        return $this->belongsTo(Event::class);
     }
 
    

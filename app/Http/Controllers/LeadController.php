@@ -28,6 +28,8 @@ class LeadController extends Controller
                 'assigned_branch' => 'nullable|exists:branches,id',
                 'assigned_user' => 'nullable|exists:users,id',
                 'created_by' => 'nullable|exists:users,id',
+                'lead_type' => 'nullable|exists:lead_types,id',
+                'event_id' => 'nullable|exists:events,id',
 
             ]);
 
@@ -45,6 +47,8 @@ class LeadController extends Controller
                 'notes' => $validated['notes'] ?? null,
                 'assigned_branch' => $validated['assigned_branch'] ?? null,
                 'assigned_user' => $validated['assigned_user'] ?? null,
+                'lead_type' => $validated['lead_type'] ?? null,
+                'event_id' => $validated['event_id'] ?? null,
                 'created_by' => $id,
             ]);
 
@@ -56,7 +60,7 @@ class LeadController extends Controller
 
     public function LeadList(Request $request)
     {
-        $list = Lead::with('status','user.branch')->get();
+        $list = Lead::with('status','user.branch','type','event' )->get();
 
         return response()->json(['status' => 'success','list' => $list ]);
     }
@@ -108,6 +112,8 @@ class LeadController extends Controller
                 'status_id',
                 'notes',
                 'assigned_branch',
+                'event_id',
+                'lead_type',
                 'assigned_user'
             ]);
               $lead->fill($data)->save();
