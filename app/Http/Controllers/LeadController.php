@@ -33,6 +33,10 @@ class LeadController extends Controller
 
             ]);
 
+            if (empty($validated['status_id'])) {
+    $validated['status_id'] = 1;
+}
+
             Lead::create([
                 'lead_date' => $validated['lead_date'],
                 'name' => $validated['name'],
