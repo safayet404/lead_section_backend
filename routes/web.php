@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadStatusController;
+use App\Http\Controllers\LeadTypeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
@@ -58,4 +60,26 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/lead-update', [LeadController::class, 'LeadUpdate']);
     Route::delete('/lead-delete', [LeadController::class, 'DeleteLead']);
     Route::get('/single-lead', [LeadController::class, 'SingleLead']);
+});
+
+// Event
+
+Route::middleware([TokenVerificationMiddleware::class])->group(function () {
+    Route::post('/create-event', [EventController::class, 'CreateEvent']);
+    Route::get('/event-list', [EventController::class, 'EventList']);
+    Route::post('/event-update', [EventController::class, 'EventUpdate']);
+    Route::delete('/event-delete', [EventController::class, 'EventDelete']);
+    Route::get('/single-event', [EventController::class, 'SingleEvent']);
+});
+
+
+// Lead Type
+
+
+Route::middleware([TokenVerificationMiddleware::class])->group(function () {
+    Route::post('/create-type', [LeadTypeController::class, 'CreateLeadType']);
+    Route::get('/type-list', [LeadTypeController::class, 'LeadTypeList']);
+    Route::post('/type-update', [LeadTypeController::class, 'LeadTypeUpdate']);
+    Route::delete('/type-delete', [LeadTypeController::class, 'LeadTypeDelete']);
+    Route::get('/single-type', [LeadTypeController::class, 'SingleLeadType']);
 });
