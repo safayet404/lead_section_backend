@@ -25,7 +25,7 @@ class EventController extends Controller
     public function EventList(Request $request)
     {
         $list = Event::all();
-        return response()->json(['status' => 'success', 'events' => $list]);
+        return response()->json(['status' => 'success', 'list' => $list]);
     }
 
     public function SingleEvent(Request $request)

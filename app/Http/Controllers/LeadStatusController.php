@@ -78,5 +78,6 @@ class LeadStatusController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
+        
     }
 }

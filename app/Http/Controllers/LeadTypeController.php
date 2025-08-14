@@ -71,6 +71,8 @@ class LeadTypeController extends Controller
             } else {
                 return response()->json(['status' => 'failed', 'message' => 'No lead type found']);
             }
+
+            return response()->json(['status' => 'success', 'message' => 'Lead type Delete Successfully']);
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
