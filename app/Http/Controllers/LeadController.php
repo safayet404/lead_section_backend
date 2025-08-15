@@ -119,7 +119,9 @@ class LeadController extends Controller
                 'event_id',
                 'lead_type',
                 'assigned_user',
-                'assign_id'
+                'assign_id',
+                'lead_country',
+                'lead_branch'
             ]);
               $lead->fill($data)->save();
 

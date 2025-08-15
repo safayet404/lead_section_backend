@@ -8,7 +8,7 @@ class LeadStatus extends Model
 {
     protected $table = 'lead_statues';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name','color_code','health_type'];
 
     
 }

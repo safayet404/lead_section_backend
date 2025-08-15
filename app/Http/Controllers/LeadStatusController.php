@@ -11,10 +11,12 @@ class LeadStatusController extends Controller
     public function CreateLeadStatus(Request $request)
     {
         try {
-            $validated = $request->validate(['name' => 'required|string|max:55']);
+            $validated = $request->validate(['name' => 'required|string|max:55','health_type' => 'nullable|string','color_code' => 'nullable|string']);
 
             LeadStatus::create([
                 'name' => $validated['name'],
+                'health_type' => $validated['health_type'],
+                'color_code' => $validated['color_code'],
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'Lead Status Created']);
@@ -49,7 +51,7 @@ class LeadStatusController extends Controller
             $id = $request->id;
 
             $status = LeadStatus::find($id);
-            $data = $request->only(['name']);
+            $data = $request->only(['name','health_type','color_code']);
             if ($status) {
                 $status->fill($data)->save();
             }
