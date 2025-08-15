@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssignTypeController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LeadController;
@@ -82,4 +83,15 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/type-update', [LeadTypeController::class, 'LeadTypeUpdate']);
     Route::delete('/type-delete', [LeadTypeController::class, 'LeadTypeDelete']);
     Route::get('/single-type', [LeadTypeController::class, 'SingleLeadType']);
+});
+
+
+// Assign Type 
+
+Route::middleware([TokenVerificationMiddleware::class])->group(function () {
+    Route::post('/create-assign', [AssignTypeController::class, 'CreateAssignType']);
+    Route::get('/assign-list', [AssignTypeController::class, 'AssignTypeList']);
+    Route::post('/assign-update', [AssignTypeController::class, 'AssignTypeUpdate']);
+    Route::delete('/assign-delete', [AssignTypeController::class, 'AssignTypeDelete']);
+    Route::get('/single-assign', [AssignTypeController::class, 'SingleAssignType']);
 });
