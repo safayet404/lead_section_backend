@@ -32,7 +32,7 @@ class AssignTypeController extends Controller
 
     public function AssignTypeList(Request $request)
     {
-        $list = AssignType::all();
+        $list = AssignType::orderBy('created_at','desc')->get();
 
         return response()->json([
             'status' => 'Request Success',

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssignTypeController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CountryController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadStatusController;
@@ -94,4 +95,14 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/assign-update', [AssignTypeController::class, 'AssignTypeUpdate']);
     Route::delete('/assign-delete', [AssignTypeController::class, 'AssignTypeDelete']);
     Route::get('/single-assign', [AssignTypeController::class, 'SingleAssignType']);
+});
+
+// County
+
+Route::middleware([TokenVerificationMiddleware::class])->group(function () {
+    Route::post('/create-country', [CountryController::class, 'CreateCountry']);
+    Route::get('/country-list', [CountryController::class, 'CountryList']);
+    Route::post('/country-update', [CountryController::class, 'CountryDelete']);
+    Route::delete('/country-delete', [CountryController::class, 'CountryUpdate']);
+    Route::get('/single-country', [CountryController::class, 'SingleCountry']);
 });
