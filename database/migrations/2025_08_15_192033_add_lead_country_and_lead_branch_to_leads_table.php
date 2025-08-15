@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leads', function (Blueprint $table) {
-            $table->foreignId('event_id')->nullable()->constrained('events')->cascadeOnUpdate()->restrictOnDelete(); 
-            $table->foreignId('lead_type')->nullable()->constrained('lead_types')->cascadeOnUpdate()->restrictOnDelete();
+             $table->foreignId('lead_country')->default(1)->constrained('countries')->cascadeOnUpdate()->restrictOnDelete(); 
+            $table->foreignId('lead_branch')->default(1)->constrained('branches')->cascadeOnUpdate()->restrictOnDelete();
         });
     }
 

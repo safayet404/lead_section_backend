@@ -23,7 +23,9 @@ class Lead extends Model
         'created_by',
         'event_id',
         'lead_type',
-        'assign_id'
+        'assign_id',
+        'lead_country',
+        'lead_branch'
     ];
 
     public function status()
@@ -50,6 +52,14 @@ class Lead extends Model
 
      public function assign_type()  {
         return $this->belongsTo(AssignType::class,'assign_id');
+    }
+
+      public function lead_country()  {
+        return $this->belongsTo(Country::class,'lead_country');
+    }
+
+      public function lead_branch()  {
+        return $this->belongsTo(Branch::class,'lead_branch');
     }
    
 }
