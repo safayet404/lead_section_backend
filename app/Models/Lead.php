@@ -22,7 +22,8 @@ class Lead extends Model
         'assigned_user',
         'created_by',
         'event_id',
-        'lead_type'
+        'lead_type',
+        'assign_id'
     ];
 
     public function status()
@@ -47,5 +48,8 @@ class Lead extends Model
         return $this->belongsTo(Event::class);
     }
 
+     public function assign_type()  {
+        return $this->belongsTo(AssignType::class,'assign_id');
+    }
    
 }

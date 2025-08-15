@@ -64,7 +64,7 @@ class LeadController extends Controller
 
     public function LeadList(Request $request)
     {
-        $list = Lead::with('status','user.branch','type','event' )->get();
+        $list = Lead::with('status','user.branch','type','event','assign_type' )->get();
 
         return response()->json(['status' => 'success','list' => $list ]);
     }
@@ -118,7 +118,8 @@ class LeadController extends Controller
                 'assigned_branch',
                 'event_id',
                 'lead_type',
-                'assigned_user'
+                'assigned_user',
+                'assign_id'
             ]);
               $lead->fill($data)->save();
 
