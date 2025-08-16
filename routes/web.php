@@ -32,7 +32,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-branch', [BranchController::class, 'CreateBranch']);
     Route::get('/branch-list', [BranchController::class, 'BranchList']);
-    Route::post('/branch-update', [BranchController::class, 'BranchUpdate']);
+    Route::put('/branch-update', [BranchController::class, 'BranchUpdate']);
     Route::delete('/branch-delete', [BranchController::class, 'BranchDelete']);
     Route::get('/single-branch', [BranchController::class, 'SingleBranch']);
 });
@@ -41,7 +41,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 Route::post('/create-role', [RoleController::class, 'CreateRole']);
 Route::get('/role-list', [RoleController::class, 'RoleList']);
 Route::get('/single-role', [RoleController::class, 'SingleRole']);
-Route::post('/role-update', [RoleController::class, 'RoleUpdate']);
+Route::put('/role-update', [RoleController::class, 'RoleUpdate']);
 Route::delete('/role-delete', [RoleController::class, 'RoleDelete']);
 
 // Lead Status
@@ -69,7 +69,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-event', [EventController::class, 'CreateEvent']);
     Route::get('/event-list', [EventController::class, 'EventList']);
-    Route::post('/event-update', [EventController::class, 'EventUpdate']);
+    Route::put('/event-update', [EventController::class, 'EventUpdate']);
     Route::delete('/event-delete', [EventController::class, 'EventDelete']);
     Route::get('/single-event', [EventController::class, 'SingleEvent']);
 });
@@ -81,7 +81,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-type', [LeadTypeController::class, 'CreateLeadType']);
     Route::get('/type-list', [LeadTypeController::class, 'LeadTypeList']);
-    Route::post('/type-update', [LeadTypeController::class, 'LeadTypeUpdate']);
+    Route::put('/type-update', [LeadTypeController::class, 'LeadTypeUpdate']);
     Route::delete('/type-delete', [LeadTypeController::class, 'LeadTypeDelete']);
     Route::get('/single-type', [LeadTypeController::class, 'SingleLeadType']);
 });
@@ -92,7 +92,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-assign', [AssignTypeController::class, 'CreateAssignType']);
     Route::get('/assign-list', [AssignTypeController::class, 'AssignTypeList']);
-    Route::post('/assign-update', [AssignTypeController::class, 'AssignTypeUpdate']);
+    Route::put('/assign-update', [AssignTypeController::class, 'AssignTypeUpdate']);
     Route::delete('/assign-delete', [AssignTypeController::class, 'AssignTypeDelete']);
     Route::get('/single-assign', [AssignTypeController::class, 'SingleAssignType']);
 });
@@ -102,7 +102,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-country', [CountryController::class, 'CreateCountry']);
     Route::get('/country-list', [CountryController::class, 'CountryList']);
-    Route::post('/country-update', [CountryController::class, 'CountryDelete']);
-    Route::delete('/country-delete', [CountryController::class, 'CountryUpdate']);
+    Route::put('/country-update', [CountryController::class, 'CountryUpdate']);
+    Route::delete('/country-delete', [CountryController::class, 'CountryDelete']);
     Route::get('/single-country', [CountryController::class, 'SingleCountry']);
 });
