@@ -51,7 +51,8 @@ public function UserLogin(Request $request)
 
             $response = response()->json([
                 'status' => 'success',
-                'message' => 'User Login Successful'
+                'message' => 'User Login Successful',
+                'user' => $user
             ]);
 
             // Set cookie with explicit localhost domain
