@@ -61,5 +61,10 @@ class Lead extends Model
       public function lead_branch()  {
         return $this->belongsTo(Branch::class,'lead_branch');
     }
+
+    public function note()
+    {
+        return $this->hasMany(ManagerNote::class);
+    }
    
 }

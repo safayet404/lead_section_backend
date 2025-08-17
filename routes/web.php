@@ -7,6 +7,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\LeadTypeController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
@@ -105,4 +106,14 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::put('/country-update', [CountryController::class, 'CountryUpdate']);
     Route::delete('/country-delete', [CountryController::class, 'CountryDelete']);
     Route::get('/single-country', [CountryController::class, 'SingleCountry']);
+});
+
+// Manager Note
+
+Route::middleware([TokenVerificationMiddleware::class])->group(function () {
+    Route::post('/create-note', [NoteController::class, 'CreateNote']);
+    Route::get('/note-list', [NoteController::class, 'NoteList']);
+    Route::put('/note-update', [NoteController::class, 'NoteUpdate']);
+    Route::delete('/note-delete', [NoteController::class, 'NoteDelete']);
+    Route::get('/single-note', [NoteController::class, 'SingleNote']);
 });
