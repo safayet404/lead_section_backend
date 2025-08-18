@@ -19,6 +19,8 @@ class UserController extends Controller
                 'mobile' => 'required|string|max:50',
                 'password' => 'required|string|min:6',
                 'role_id' => 'required|exists:roles,id',
+                'parent_id' => 'nullable|exists:users,id',
+                'branch_id' => 'required|exists:branches,id',
 
             ]);
 
@@ -28,6 +30,8 @@ class UserController extends Controller
                 'mobile' => $validated['mobile'],
                 'password' => $validated['password'],
                 'role_id' => $validated['role_id'],
+                'parent_id' => $validated['parent_id'] ?? null,
+                'branch_id' => $validated['branch_id'],
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'User Registration Successfull']);

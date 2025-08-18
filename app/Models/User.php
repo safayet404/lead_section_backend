@@ -23,6 +23,8 @@ class User extends Authenticatable
         'password',
         'role_id',
         'mobile',
+        'parent_id',
+        'branch_id'
 
     ];
 

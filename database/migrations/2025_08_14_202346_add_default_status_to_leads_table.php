@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('leads', function (Blueprint $table) {
-            // This line changes the column to add a default value of 1.
-            $table->foreignId('status_id')->nullable()->default(1)->change();
+            $table->foreignId('status_id')->default(1)->constrained('lead_statues')->cascadeOnUpdate()->restrictOnDelete();
         });
     }
 
@@ -23,8 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('leads', function (Blueprint $table) {
-            // This line reverts the change by setting the default back to null.
-            $table->foreignId('status_id')->nullable()->default(null)->change();
+           
         });
     }
 };

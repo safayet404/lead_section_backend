@@ -10,7 +10,7 @@ class RoleController extends Controller
 {
     public function CreateRole(Request $request)
     {
-        $validated = $request->validate(['name' => 'required|string|max:25']);
+        $validated = $request->validate(['name' => 'required|string|max:50']);
 
         try {
             Role::create([
