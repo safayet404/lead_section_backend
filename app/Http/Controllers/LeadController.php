@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -131,5 +132,40 @@ class LeadController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
+    }
+
+    public function AssignPreview(Request $request)
+    {
+        $validated = $request->validate([
+            'lead_type' => 'required|exists:lead_types,id',
+            'lead_country' => 'nullable|exists:countries,id',
+            'lead_branch' => 'required|exists:branches,id',
+            'event_id' => 'nullable|exists:events,id',
+            'assign_branch' => 'required|exists:branches,id',
+        ]);
+
+        $q = Lead::query()->whereNull('assigned_user')->where('lead_type',$validated['lead_type'])
+        ->where('lead_branch',$validated['lead_branch']);
+
+        if(!empty($validated['event_id'])){
+            $q->where('event_id',$validated['event_id']);
+        }
+  if(!empty($validated['lead_country'])){
+            $q->where('lead_country',$validated['lead_country']);
+        }
+
+        $totalAvailabe =(clone $q)->count();
+
+        $users = User::query()
+        ->where('branch_id',$validated['assign_branch'])->select('id','name','email','branch_id')->get();
+
+
+        return response()->json([
+            'status' => 'success',
+            'total_leads_available' => $totalAvailabe,
+            'total_leads_assigned' => 0,
+            'remaining_leads' => $totalAvailabe,
+            'users' => $users
+        ]);
     }
 }

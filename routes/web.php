@@ -63,6 +63,8 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/lead-update', [LeadController::class, 'LeadUpdate']);
     Route::delete('/lead-delete', [LeadController::class, 'DeleteLead']);
     Route::get('/single-lead', [LeadController::class, 'SingleLead']);
+
+    Route::post('/lead-preview',[LeadController::class,'AssignPreview']);
 });
 
 // Event
