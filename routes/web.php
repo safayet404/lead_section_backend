@@ -66,6 +66,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 
     Route::post('/lead-preview',[LeadController::class,'AssignPreview']);
     Route::post('/lead-assign',[LeadController::class,'AssignLeads']);
+    Route::post('/assign-lead',[LeadController::class,'AssignSave']);
 });
 
 // Event

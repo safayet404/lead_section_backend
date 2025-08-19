@@ -274,12 +274,12 @@ public function AssignSave(Request $request)
         'assignments'   => 'required|array',
         'assignments.*.user_id' => 'required|exists:users,id',
         'assignments.*.leads'   => 'required|integer|min:0',
-        'assigned_status_id'    => 'nullable|exists:lead_statues,id', // optional; default below
+       
     ]);
 
-    $assignedStatusId = $validated['assigned_status_id'] ?? 2; // <-- adjust to your "Assigned" status id
 
-    return DB::transaction(function () use ($validated, $assignedStatusId) {
+
+    return DB::transaction(function () use ($validated) {
         // Build the pool of unassigned leads with same filters as preview
         $poolQ = Lead::query()
             ->whereNull('assigned_user')
@@ -313,7 +313,7 @@ public function AssignSave(Request $request)
             Lead::whereIn('id', $slice)->update([
                 'assigned_user'   => $userId,
                 'assigned_branch' => $validated['assign_branch'], // or user's branch_id if you prefer
-                'status_id'       => $assignedStatusId,
+                'assign_id'       => 2,
             ]);
         }
 
