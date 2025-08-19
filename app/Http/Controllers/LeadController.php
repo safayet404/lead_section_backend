@@ -208,4 +208,126 @@ class LeadController extends Controller
             'groupUser' => $payload
         ]);
     }
+
+    public function AssignLeads(Request $request)
+{
+    $validated = $request->validate([
+        'lead_type'     => 'required|exists:lead_types,id',
+        'lead_country'  => 'nullable|exists:countries,id',
+        'lead_branch'   => 'required|exists:branches,id',
+        'event_id'      => 'nullable|exists:events,id',
+        'assign_branch' => 'required|exists:branches,id',
+        'assignments'   => 'required|array', // [{user_id: 5, leads: 3}, ...]
+        'assignments.*.user_id' => 'required|exists:users,id',
+        'assignments.*.leads'   => 'required|integer|min:0'
+    ]);
+
+    // Base query for unassigned leads
+    $query = Lead::query()
+        ->whereNull('assigned_user')
+        ->where('lead_type', $validated['lead_type'])
+        ->where('lead_branch', $validated['lead_branch']);
+
+    if (!empty($validated['event_id'])) {
+        $query->where('event_id', $validated['event_id']);
+    }
+    if (!empty($validated['lead_country'])) {
+        $query->where('lead_country', $validated['lead_country']);
+    }
+
+    $availableLeads = $query->get();
+
+    $assignedCount = 0;
+    foreach ($validated['assignments'] as $assignment) {
+        if ($assignment['leads'] <= 0) continue;
+
+        $take = min($assignment['leads'], $availableLeads->count());
+        $leadsForUser = $availableLeads->splice(0, $take);
+
+        foreach ($leadsForUser as $lead) {
+            $lead->update([
+                'assigned_user'   => $assignment['user_id'],
+                'assigned_branch' => $validated['assign_branch'],
+                'assign_id'          => 2 
+            ]);
+        }
+
+        $assignedCount += $take;
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'assigned' => $assignedCount,
+        'remaining' => $availableLeads->count()
+    ]);
+}
+
+
+public function AssignSave(Request $request)
+{
+    $validated = $request->validate([
+        'lead_type'     => 'required|exists:lead_types,id',
+        'lead_country'  => 'nullable|exists:countries,id',
+        'lead_branch'   => 'required|exists:branches,id',     // belongs-to branch
+        'event_id'      => 'nullable|exists:events,id',
+        'assign_branch' => 'required|exists:branches,id',      // branch whose users are being assigned to
+        'assignments'   => 'required|array',
+        'assignments.*.user_id' => 'required|exists:users,id',
+        'assignments.*.leads'   => 'required|integer|min:0',
+        'assigned_status_id'    => 'nullable|exists:lead_statues,id', // optional; default below
+    ]);
+
+    $assignedStatusId = $validated['assigned_status_id'] ?? 2; // <-- adjust to your "Assigned" status id
+
+    return DB::transaction(function () use ($validated, $assignedStatusId) {
+        // Build the pool of unassigned leads with same filters as preview
+        $poolQ = Lead::query()
+            ->whereNull('assigned_user')
+            ->where('lead_type',  $validated['lead_type'])
+            ->where('lead_branch',$validated['lead_branch']);
+
+        if (!empty($validated['event_id'])) {
+            $poolQ->where('event_id', $validated['event_id']);
+        }
+        if (!empty($validated['lead_country'])) {
+            $poolQ->where('lead_country', $validated['lead_country']);
+        }
+
+        // Randomize & lock to avoid race conditions
+        $poolIds = $poolQ->inRandomOrder()->lockForUpdate()->pluck('id')->toArray();
+        $available = count($poolIds);
+
+        $requested = array_sum(array_map(fn($a) => (int)$a['leads'], $validated['assignments']));
+        $idx = 0; // pointer into pool
+
+        foreach ($validated['assignments'] as $a) {
+            $userId = (int) $a['user_id'];
+            $count  = max(0, (int) $a['leads']);
+            if ($count === 0 || $idx >= $available) continue;
+
+            $slice = array_slice($poolIds, $idx, $count);
+            $idx  += count($slice);
+
+            if (!$slice) continue;
+
+            Lead::whereIn('id', $slice)->update([
+                'assigned_user'   => $userId,
+                'assigned_branch' => $validated['assign_branch'], // or user's branch_id if you prefer
+                'status_id'       => $assignedStatusId,
+            ]);
+        }
+
+        $assigned = min($requested, $available);
+        $remaining = max(0, $available - $assigned);
+
+        return response()->json([
+            'status'    => 'success',
+            'message'   => 'Leads assigned successfully.',
+            'assigned'  => $assigned,
+            'remaining' => $remaining,
+        ]);
+    });
+}
+
+
 }
