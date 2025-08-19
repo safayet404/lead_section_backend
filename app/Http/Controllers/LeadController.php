@@ -6,6 +6,7 @@ use App\Models\Lead;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LeadController extends Controller
 {
@@ -156,8 +157,46 @@ class LeadController extends Controller
 
         $totalAvailabe =(clone $q)->count();
 
-        $users = User::query()
-        ->where('branch_id',$validated['assign_branch'])->select('id','name','email','branch_id')->get();
+        $users = User::query()->join('branches','users.branch_id' ,'=','branches.id')
+        ->where('users.branch_id',$validated['assign_branch'])->select('users.id','users.name','users.email','users.branch_id','branches.name as branch_name')->get();
+
+        $userIds = $users->pluck('id');
+        $totals = Lead::select('assigned_user',DB::raw('COUNT(*) as total'))
+        ->whereIn('assigned_user',$userIds)
+        ->groupBy('assigned_user')
+        ->pluck('total','assigned_user');
+
+        $byCountry = Lead::select(
+        'assigned_user',
+        'lead_country',
+        DB::raw('COUNT(*) as total'),
+        'countries.name as country_name'
+    )
+    ->join('countries', 'leads.lead_country', '=', 'countries.id')
+    ->whereIn('assigned_user', $userIds)
+    ->groupBy('assigned_user','lead_country','countries.name')
+    ->get()
+    ->groupBy('assigned_user');
+
+
+        $payload = $users->map(function ($u) use ($totals,$byCountry){
+            return [
+                'id' => $u->id,
+                'name' => $u->name,
+                'email' => $u->email,
+                'branch_id' => $u->branch_id,
+                'branch_name' => $u->branch_name, // ✅ Added
+                'current_total' => (int) ($totals[$u->id] ?? 0),
+                'by_country' => ($byCountry[$u->id] ?? collect())->map(function ($row){
+                    return [
+                        'lead_country' => (int) $row->lead_country,
+                       'country_name' => $row->country_name, // works now
+                        'total' => (int) $row->total,
+                    ];
+                })->values()                
+            ];
+
+        });
 
 
         return response()->json([
@@ -165,7 +204,8 @@ class LeadController extends Controller
             'total_leads_available' => $totalAvailabe,
             'total_leads_assigned' => 0,
             'remaining_leads' => $totalAvailabe,
-            'users' => $users
+            'users' => $users,
+            'groupUser' => $payload
         ]);
     }
 }
