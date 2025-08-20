@@ -87,7 +87,7 @@ public function UserLogin(Request $request)
 
     public function UserList(Request $request)
     {
-        $list = User::all();
+        $list = User::with('role','branch','parent')->get();
 
         return response()->json(['status' => 'success', 'list' => $list]);
     }

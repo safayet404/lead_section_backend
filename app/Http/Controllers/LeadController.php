@@ -185,12 +185,12 @@ class LeadController extends Controller
                 'name' => $u->name,
                 'email' => $u->email,
                 'branch_id' => $u->branch_id,
-                'branch_name' => $u->branch_name, // ✅ Added
+                'branch_name' => $u->branch_name,
                 'current_total' => (int) ($totals[$u->id] ?? 0),
                 'by_country' => ($byCountry[$u->id] ?? collect())->map(function ($row){
                     return [
                         'lead_country' => (int) $row->lead_country,
-                       'country_name' => $row->country_name, // works now
+                       'country_name' => $row->country_name, 
                         'total' => (int) $row->total,
                     ];
                 })->values()                
@@ -217,12 +217,11 @@ class LeadController extends Controller
         'lead_branch'   => 'required|exists:branches,id',
         'event_id'      => 'nullable|exists:events,id',
         'assign_branch' => 'required|exists:branches,id',
-        'assignments'   => 'required|array', // [{user_id: 5, leads: 3}, ...]
+        'assignments'   => 'required|array',
         'assignments.*.user_id' => 'required|exists:users,id',
         'assignments.*.leads'   => 'required|integer|min:0'
     ]);
 
-    // Base query for unassigned leads
     $query = Lead::query()
         ->whereNull('assigned_user')
         ->where('lead_type', $validated['lead_type'])
@@ -268,9 +267,9 @@ public function AssignSave(Request $request)
     $validated = $request->validate([
         'lead_type'     => 'required|exists:lead_types,id',
         'lead_country'  => 'nullable|exists:countries,id',
-        'lead_branch'   => 'required|exists:branches,id',     // belongs-to branch
+        'lead_branch'   => 'required|exists:branches,id',   
         'event_id'      => 'nullable|exists:events,id',
-        'assign_branch' => 'required|exists:branches,id',      // branch whose users are being assigned to
+        'assign_branch' => 'required|exists:branches,id',     
         'assignments'   => 'required|array',
         'assignments.*.user_id' => 'required|exists:users,id',
         'assignments.*.leads'   => 'required|integer|min:0',
@@ -280,7 +279,6 @@ public function AssignSave(Request $request)
 
 
     return DB::transaction(function () use ($validated) {
-        // Build the pool of unassigned leads with same filters as preview
         $poolQ = Lead::query()
             ->whereNull('assigned_user')
             ->where('lead_type',  $validated['lead_type'])
@@ -293,12 +291,11 @@ public function AssignSave(Request $request)
             $poolQ->where('lead_country', $validated['lead_country']);
         }
 
-        // Randomize & lock to avoid race conditions
         $poolIds = $poolQ->inRandomOrder()->lockForUpdate()->pluck('id')->toArray();
         $available = count($poolIds);
 
         $requested = array_sum(array_map(fn($a) => (int)$a['leads'], $validated['assignments']));
-        $idx = 0; // pointer into pool
+        $idx = 0; 
 
         foreach ($validated['assignments'] as $a) {
             $userId = (int) $a['user_id'];
@@ -312,7 +309,7 @@ public function AssignSave(Request $request)
 
             Lead::whereIn('id', $slice)->update([
                 'assigned_user'   => $userId,
-                'assigned_branch' => $validated['assign_branch'], // or user's branch_id if you prefer
+                'assigned_branch' => $validated['assign_branch'],
                 'assign_id'       => 2,
             ]);
         }
