@@ -131,4 +131,22 @@ public function UserLogin(Request $request)
         ]);
 
     }
+
+       public function UserUpdate(Request $request)
+    {
+        try {
+            $id = $request->id;
+
+            $user = User::find($id);
+            $data = $request->only(['name','email','password','role_id','branch_id','mobile','parent_id']);
+            if ($user) {
+                $user->fill($data)->save();
+            }
+
+            return response()->json(['status' => 'success', 'message' => 'User Updated']);
+
+        } catch (Exception $e) {
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+        }
+    }
 }

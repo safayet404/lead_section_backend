@@ -23,6 +23,7 @@ Route::post('/login', [UserController::class, 'UserLogin']);
 Route::post('/logout', [UserController::class, 'UserLogout']);
 Route::post('/reset-password', [UserController::class, 'ResetPassword']);
 Route::get('/user-list', [UserController::class, 'UserList']);
+Route::put('/user-update', [UserController::class, 'UserUpdate']);
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('profile', [UserController::class, 'UserProfile']);
