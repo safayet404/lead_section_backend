@@ -66,7 +66,27 @@ class LeadController extends Controller
 
     public function LeadList(Request $request)
     {
-        $list = Lead::with('status','user.branch','type','event','assign_type','lead_country','lead_branch','note.user' )->get();
+
+           $userId = $request->header('id');
+
+
+           $user = User::with('branch')->findOrFail($userId);
+    
+
+        $query = Lead::with('status','user.branch','type','event','assign_type','lead_country','lead_branch','note.user' );
+
+        if($user->role_id == 1)
+        {
+
+        }elseif($user->role_id == 3)
+        {
+            $query->where('assigned_branch',$user->branch_id);
+        }else{
+            $query->where('assigned_user',$user->id);
+        }
+
+        $list = $query->get();
+
 
         return response()->json(['status' => 'success','list' => $list ]);
     }
