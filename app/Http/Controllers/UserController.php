@@ -42,52 +42,52 @@ class UserController extends Controller
         }
     }
 
-public function UserLogin(Request $request)
-{
-    try {
-        $email = $request->input('email');
-        $password = $request->input('password');
+    public function UserLogin(Request $request)
+    {
+        try {
+            $email = $request->input('email');
+            $password = $request->input('password');
 
-        $user = User::where('email', $email)->select('id', 'password', 'role_id')->first();
+            $user = User::where('email', $email)->select('id', 'password', 'role_id')->first();
 
-        if ($user && Hash::check($password, $user->password)) {
-            $token = JWTToken::CreateToken($email, $user->id, $user->role_id);
+            if ($user && Hash::check($password, $user->password)) {
+                $token = JWTToken::CreateToken($email, $user->id, $user->role_id);
 
-            $response = response()->json([
-                'status' => 'success',
-                'message' => 'User Login Successful',
-                'user' => $user
-            ]);
+                $response = response()->json([
+                    'status' => 'success',
+                    'message' => 'User Login Successful',
+                    'user' => $user,
+                ]);
 
-            // Set cookie with explicit localhost domain
-            $response->cookie(
-                'token',
-                $token,
-                60 * 24 * 30,      // minutes
-                '/',               // path
-                'localhost',       // domain - explicitly set to localhost
-                false,             // secure
-                true,              // httpOnly
-                false,             // raw
-                'Lax'              // sameSite
-            );
+                // Set cookie with explicit localhost domain
+                $response->cookie(
+                    'token',
+                    $token,
+                    60 * 24 * 30,      // minutes
+                    '/',               // path
+                    'localhost',       // domain - explicitly set to localhost
+                    false,             // secure
+                    true,              // httpOnly
+                    false,             // raw
+                    'Lax'              // sameSite
+                );
 
-            return $response;
+                return $response;
 
-        } else {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'unauthorized',
-            ]);
+            } else {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'unauthorized',
+                ]);
+            }
+        } catch (Exception $e) {
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
-    } catch (Exception $e) {
-        return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
     }
-}
 
     public function UserList(Request $request)
     {
-        $list = User::with('role','branch','parent')->get();
+        $list = User::with('role', 'branch', 'parent')->get();
 
         return response()->json(['status' => 'success', 'list' => $list]);
     }
@@ -132,13 +132,13 @@ public function UserLogin(Request $request)
 
     }
 
-       public function UserUpdate(Request $request)
+    public function UserUpdate(Request $request)
     {
         try {
             $id = $request->id;
 
             $user = User::find($id);
-            $data = $request->only(['name','email','password','role_id','branch_id','mobile','parent_id']);
+            $data = $request->only(['name', 'email', 'password', 'role_id', 'branch_id', 'mobile', 'parent_id']);
             if ($user) {
                 $user->fill($data)->save();
             }

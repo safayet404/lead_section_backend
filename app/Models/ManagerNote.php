@@ -8,7 +8,7 @@ class ManagerNote extends Model
 {
     protected $table = 'manager_notes';
 
-    protected $fillable = ['lead_id','user_id','note'];
+    protected $fillable = ['lead_id', 'user_id', 'note'];
 
     public function user()
     {

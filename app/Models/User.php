@@ -24,7 +24,7 @@ class User extends Authenticatable
         'role_id',
         'mobile',
         'parent_id',
-        'branch_id'
+        'branch_id',
 
     ];
 
@@ -51,15 +51,18 @@ class User extends Authenticatable
         ];
     }
 
-
     public function role()
     {
-       return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class);
     }
 
-    public function branch(){
+    public function branch()
+    {
         return $this->belongsTo(Branch::class);
-    } public function parent(){
+    }
+
+    public function parent()
+    {
         return $this->belongsTo(User::class);
     }
 }

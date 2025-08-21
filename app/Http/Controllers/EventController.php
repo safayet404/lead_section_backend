@@ -14,17 +14,19 @@ class EventController extends Controller
             $validated = $request->validate(['name' => 'required|string']);
 
             Event::create([
-                'name' => $validated['name']
+                'name' => $validated['name'],
             ]);
+
             return response()->json(['status' => 'success', 'message' => 'Event Created']);
         } catch (Exception $e) {
-           return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
     public function EventList(Request $request)
     {
         $list = Event::all();
+
         return response()->json(['status' => 'success', 'list' => $list]);
     }
 
@@ -33,13 +35,14 @@ class EventController extends Controller
         try {
             $id = $request->id;
             $event = Event::find($id);
+
             return response()->json(['status' => 'success', 'event' => $event]);
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
-      public function EventUpdate(Request $request)
+    public function EventUpdate(Request $request)
     {
         try {
             $id = $request->id;
@@ -74,6 +77,6 @@ class EventController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
-        
+
     }
 }

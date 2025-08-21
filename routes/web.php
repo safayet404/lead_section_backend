@@ -65,9 +65,14 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::delete('/lead-delete', [LeadController::class, 'DeleteLead']);
     Route::get('/single-lead', [LeadController::class, 'SingleLead']);
 
-    Route::post('/lead-preview',[LeadController::class,'AssignPreview']);
-    Route::post('/lead-assign',[LeadController::class,'AssignLeads']);
-    Route::post('/assign-lead',[LeadController::class,'AssignSave']);
+    Route::post('/lead-preview', [LeadController::class, 'AssignPreview']);
+    Route::post('/lead-assign', [LeadController::class, 'AssignLeads']);
+    Route::post('/assign-lead', [LeadController::class, 'AssignSave']);
+
+
+    Route::get('/summary', [LeadController::class, 'branchManager']);
+
+
 });
 
 // Event
@@ -80,9 +85,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('/single-event', [EventController::class, 'SingleEvent']);
 });
 
-
 // Lead Type
-
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-type', [LeadTypeController::class, 'CreateLeadType']);
@@ -92,8 +95,7 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('/single-type', [LeadTypeController::class, 'SingleLeadType']);
 });
 
-
-// Assign Type 
+// Assign Type
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/create-assign', [AssignTypeController::class, 'CreateAssignType']);

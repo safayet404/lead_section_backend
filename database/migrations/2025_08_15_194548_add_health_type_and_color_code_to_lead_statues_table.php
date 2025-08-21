@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('lead_statues', function (Blueprint $table) {
-        $table->string('color_code')->nullable();
-        $table->string('health_type')->nullable(); 
+            $table->string('color_code')->nullable();
+            $table->string('health_type')->nullable();
         });
     }
 

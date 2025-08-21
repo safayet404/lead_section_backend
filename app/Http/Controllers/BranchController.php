@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
-use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -33,10 +32,6 @@ class BranchController extends Controller
 
     public function BranchList(Request $request)
     {
-    
-    
-
-
 
         $list = Branch::all();
 

@@ -8,25 +8,27 @@ use Illuminate\Http\Request;
 
 class NoteController extends Controller
 {
-     public function CreateNote(Request $request)
+    public function CreateNote(Request $request)
     {
         try {
-            $validated = $request->validate(['note' => 'required|string','lead_id' => 'required|exists:leads,id','user_id' => 'required|exists:users,id']);
+            $validated = $request->validate(['note' => 'required|string', 'lead_id' => 'required|exists:leads,id', 'user_id' => 'required|exists:users,id']);
 
             ManagerNote::create([
                 'note' => $validated['note'],
                 'lead_id' => $validated['lead_id'],
                 'user_id' => $validated['user_id'],
             ]);
+
             return response()->json(['status' => 'success', 'message' => 'Manager Note Created']);
         } catch (Exception $e) {
-           return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
     public function NoteList(Request $request)
     {
         $list = ManagerNote::with('user')->get();
+
         return response()->json(['status' => 'success', 'list' => $list]);
     }
 
@@ -35,19 +37,20 @@ class NoteController extends Controller
         try {
             $id = $request->id;
             $note = ManagerNote::find($id);
+
             return response()->json(['status' => 'success', 'note' => $note]);
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
-      public function NoteUpdate(Request $request)
+    public function NoteUpdate(Request $request)
     {
         try {
             $id = $request->id;
 
             $note = ManagerNote::find($id);
-            $data = $request->only(['note','lead_id','user_id']);
+            $data = $request->only(['note', 'lead_id', 'user_id']);
             if ($note) {
                 $note->fill($data)->save();
             }
@@ -76,6 +79,6 @@ class NoteController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
-        
+
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lead;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,8 +37,8 @@ class LeadController extends Controller
             ]);
 
             if (empty($validated['status_id'])) {
-    $validated['status_id'] = 1;
-}
+                $validated['status_id'] = 1;
+            }
 
             Lead::create([
                 'lead_date' => $validated['lead_date'],
@@ -67,28 +68,23 @@ class LeadController extends Controller
     public function LeadList(Request $request)
     {
 
-           $userId = $request->header('id');
+        $userId = $request->header('id');
 
+        $user = User::with('branch')->findOrFail($userId);
 
-           $user = User::with('branch')->findOrFail($userId);
-    
+        $query = Lead::with('status', 'user.branch', 'type', 'event', 'assign_type', 'lead_country', 'lead_branch', 'note.user');
 
-        $query = Lead::with('status','user.branch','type','event','assign_type','lead_country','lead_branch','note.user' );
+        if ($user->role_id == 1) {
 
-        if($user->role_id == 1)
-        {
-
-        }elseif($user->role_id == 3)
-        {
-            $query->where('assigned_branch',$user->branch_id);
-        }else{
-            $query->where('assigned_user',$user->id);
+        } elseif ($user->role_id == 3) {
+            $query->where('assigned_branch', $user->branch_id);
+        } else {
+            $query->where('assigned_user', $user->id);
         }
 
         $list = $query->get();
 
-
-        return response()->json(['status' => 'success','list' => $list ]);
+        return response()->json(['status' => 'success', 'list' => $list]);
     }
 
     public function SingleLead(Request $request)
@@ -97,24 +93,22 @@ class LeadController extends Controller
 
         $lead = Lead::find($id);
 
-        return response()->json(['status' => 'success','lead' => $lead]);
+        return response()->json(['status' => 'success', 'lead' => $lead]);
     }
 
     public function DeleteLead(Request $request)
     {
-        try{
+        try {
             $id = $request->id;
 
             $lead = Lead::find($id);
 
-            if($lead)
-            {
+            if ($lead) {
                 $lead->delete();
-            }else{
+            } else {
                 return response()->json(['status' => 'success', 'message' => 'This lead is not found']);
             }
-        }catch(Exception $e)
-        {
+        } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
@@ -143,12 +137,11 @@ class LeadController extends Controller
                 'assigned_user',
                 'assign_id',
                 'lead_country',
-                'lead_branch'
+                'lead_branch',
             ]);
-              $lead->fill($data)->save();
+            $lead->fill($data)->save();
 
-              return response()->json(['status' => 'success', 'message' => 'Lead update successfull']);
-
+            return response()->json(['status' => 'success', 'message' => 'Lead update successfull']);
 
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
@@ -165,41 +158,40 @@ class LeadController extends Controller
             'assign_branch' => 'required|exists:branches,id',
         ]);
 
-        $q = Lead::query()->whereNull('assigned_user')->where('lead_type',$validated['lead_type'])
-        ->where('lead_branch',$validated['lead_branch']);
+        $q = Lead::query()->whereNull('assigned_user')->where('lead_type', $validated['lead_type'])
+            ->where('lead_branch', $validated['lead_branch']);
 
-        if(!empty($validated['event_id'])){
-            $q->where('event_id',$validated['event_id']);
+        if (! empty($validated['event_id'])) {
+            $q->where('event_id', $validated['event_id']);
         }
-  if(!empty($validated['lead_country'])){
-            $q->where('lead_country',$validated['lead_country']);
+        if (! empty($validated['lead_country'])) {
+            $q->where('lead_country', $validated['lead_country']);
         }
 
-        $totalAvailabe =(clone $q)->count();
+        $totalAvailabe = (clone $q)->count();
 
-        $users = User::query()->join('branches','users.branch_id' ,'=','branches.id')
-        ->where('users.branch_id',$validated['assign_branch'])->select('users.id','users.name','users.email','users.branch_id','branches.name as branch_name')->get();
+        $users = User::query()->join('branches', 'users.branch_id', '=', 'branches.id')
+            ->where('users.branch_id', $validated['assign_branch'])->select('users.id', 'users.name', 'users.email', 'users.branch_id', 'branches.name as branch_name')->get();
 
         $userIds = $users->pluck('id');
-        $totals = Lead::select('assigned_user',DB::raw('COUNT(*) as total'))
-        ->whereIn('assigned_user',$userIds)
-        ->groupBy('assigned_user')
-        ->pluck('total','assigned_user');
+        $totals = Lead::select('assigned_user', DB::raw('COUNT(*) as total'))
+            ->whereIn('assigned_user', $userIds)
+            ->groupBy('assigned_user')
+            ->pluck('total', 'assigned_user');
 
         $byCountry = Lead::select(
-        'assigned_user',
-        'lead_country',
-        DB::raw('COUNT(*) as total'),
-        'countries.name as country_name'
-    )
-    ->join('countries', 'leads.lead_country', '=', 'countries.id')
-    ->whereIn('assigned_user', $userIds)
-    ->groupBy('assigned_user','lead_country','countries.name')
-    ->get()
-    ->groupBy('assigned_user');
+            'assigned_user',
+            'lead_country',
+            DB::raw('COUNT(*) as total'),
+            'countries.name as country_name'
+        )
+            ->join('countries', 'leads.lead_country', '=', 'countries.id')
+            ->whereIn('assigned_user', $userIds)
+            ->groupBy('assigned_user', 'lead_country', 'countries.name')
+            ->get()
+            ->groupBy('assigned_user');
 
-
-        $payload = $users->map(function ($u) use ($totals,$byCountry){
+        $payload = $users->map(function ($u) use ($totals, $byCountry) {
             return [
                 'id' => $u->id,
                 'name' => $u->name,
@@ -207,17 +199,16 @@ class LeadController extends Controller
                 'branch_id' => $u->branch_id,
                 'branch_name' => $u->branch_name,
                 'current_total' => (int) ($totals[$u->id] ?? 0),
-                'by_country' => ($byCountry[$u->id] ?? collect())->map(function ($row){
+                'by_country' => ($byCountry[$u->id] ?? collect())->map(function ($row) {
                     return [
                         'lead_country' => (int) $row->lead_country,
-                       'country_name' => $row->country_name, 
+                        'country_name' => $row->country_name,
                         'total' => (int) $row->total,
                     ];
-                })->values()                
+                })->values(),
             ];
 
         });
-
 
         return response()->json([
             'status' => 'success',
@@ -225,126 +216,193 @@ class LeadController extends Controller
             'total_leads_assigned' => 0,
             'remaining_leads' => $totalAvailabe,
             'users' => $users,
-            'groupUser' => $payload
+            'groupUser' => $payload,
         ]);
     }
 
     public function AssignLeads(Request $request)
-{
-    $validated = $request->validate([
-        'lead_type'     => 'required|exists:lead_types,id',
-        'lead_country'  => 'nullable|exists:countries,id',
-        'lead_branch'   => 'required|exists:branches,id',
-        'event_id'      => 'nullable|exists:events,id',
-        'assign_branch' => 'required|exists:branches,id',
-        'assignments'   => 'required|array',
-        'assignments.*.user_id' => 'required|exists:users,id',
-        'assignments.*.leads'   => 'required|integer|min:0'
-    ]);
+    {
+        $validated = $request->validate([
+            'lead_type' => 'required|exists:lead_types,id',
+            'lead_country' => 'nullable|exists:countries,id',
+            'lead_branch' => 'required|exists:branches,id',
+            'event_id' => 'nullable|exists:events,id',
+            'assign_branch' => 'required|exists:branches,id',
+            'assignments' => 'required|array',
+            'assignments.*.user_id' => 'required|exists:users,id',
+            'assignments.*.leads' => 'required|integer|min:0',
+        ]);
 
-    $query = Lead::query()
-        ->whereNull('assigned_user')
-        ->where('lead_type', $validated['lead_type'])
-        ->where('lead_branch', $validated['lead_branch']);
-
-    if (!empty($validated['event_id'])) {
-        $query->where('event_id', $validated['event_id']);
-    }
-    if (!empty($validated['lead_country'])) {
-        $query->where('lead_country', $validated['lead_country']);
-    }
-
-    $availableLeads = $query->get();
-
-    $assignedCount = 0;
-    foreach ($validated['assignments'] as $assignment) {
-        if ($assignment['leads'] <= 0) continue;
-
-        $take = min($assignment['leads'], $availableLeads->count());
-        $leadsForUser = $availableLeads->splice(0, $take);
-
-        foreach ($leadsForUser as $lead) {
-            $lead->update([
-                'assigned_user'   => $assignment['user_id'],
-                'assigned_branch' => $validated['assign_branch'],
-                'assign_id'          => 2 
-            ]);
-        }
-
-        $assignedCount += $take;
-    }
-
-    return response()->json([
-        'status' => 'success',
-        'assigned' => $assignedCount,
-        'remaining' => $availableLeads->count()
-    ]);
-}
-
-
-public function AssignSave(Request $request)
-{
-    $validated = $request->validate([
-        'lead_type'     => 'required|exists:lead_types,id',
-        'lead_country'  => 'nullable|exists:countries,id',
-        'lead_branch'   => 'required|exists:branches,id',   
-        'event_id'      => 'nullable|exists:events,id',
-        'assign_branch' => 'required|exists:branches,id',     
-        'assignments'   => 'required|array',
-        'assignments.*.user_id' => 'required|exists:users,id',
-        'assignments.*.leads'   => 'required|integer|min:0',
-       
-    ]);
-
-
-
-    return DB::transaction(function () use ($validated) {
-        $poolQ = Lead::query()
+        $query = Lead::query()
             ->whereNull('assigned_user')
-            ->where('lead_type',  $validated['lead_type'])
-            ->where('lead_branch',$validated['lead_branch']);
+            ->where('lead_type', $validated['lead_type'])
+            ->where('lead_branch', $validated['lead_branch']);
 
-        if (!empty($validated['event_id'])) {
-            $poolQ->where('event_id', $validated['event_id']);
+        if (! empty($validated['event_id'])) {
+            $query->where('event_id', $validated['event_id']);
         }
-        if (!empty($validated['lead_country'])) {
-            $poolQ->where('lead_country', $validated['lead_country']);
-        }
-
-        $poolIds = $poolQ->inRandomOrder()->lockForUpdate()->pluck('id')->toArray();
-        $available = count($poolIds);
-
-        $requested = array_sum(array_map(fn($a) => (int)$a['leads'], $validated['assignments']));
-        $idx = 0; 
-
-        foreach ($validated['assignments'] as $a) {
-            $userId = (int) $a['user_id'];
-            $count  = max(0, (int) $a['leads']);
-            if ($count === 0 || $idx >= $available) continue;
-
-            $slice = array_slice($poolIds, $idx, $count);
-            $idx  += count($slice);
-
-            if (!$slice) continue;
-
-            Lead::whereIn('id', $slice)->update([
-                'assigned_user'   => $userId,
-                'assigned_branch' => $validated['assign_branch'],
-                'assign_id'       => 2,
-            ]);
+        if (! empty($validated['lead_country'])) {
+            $query->where('lead_country', $validated['lead_country']);
         }
 
-        $assigned = min($requested, $available);
-        $remaining = max(0, $available - $assigned);
+        $availableLeads = $query->get();
+
+        $assignedCount = 0;
+        foreach ($validated['assignments'] as $assignment) {
+            if ($assignment['leads'] <= 0) {
+                continue;
+            }
+
+            $take = min($assignment['leads'], $availableLeads->count());
+            $leadsForUser = $availableLeads->splice(0, $take);
+
+            foreach ($leadsForUser as $lead) {
+                $lead->update([
+                    'assigned_user' => $assignment['user_id'],
+                    'assigned_branch' => $validated['assign_branch'],
+                    'assign_id' => 2,
+                ]);
+            }
+
+            $assignedCount += $take;
+        }
 
         return response()->json([
-            'status'    => 'success',
-            'message'   => 'Leads assigned successfully.',
-            'assigned'  => $assigned,
-            'remaining' => $remaining,
+            'status' => 'success',
+            'assigned' => $assignedCount,
+            'remaining' => $availableLeads->count(),
         ]);
-    });
-}
+    }
+
+    public function AssignSave(Request $request)
+    {
+        $validated = $request->validate([
+            'lead_type' => 'required|exists:lead_types,id',
+            'lead_country' => 'nullable|exists:countries,id',
+            'lead_branch' => 'required|exists:branches,id',
+            'event_id' => 'nullable|exists:events,id',
+            'assign_branch' => 'required|exists:branches,id',
+            'assignments' => 'required|array',
+            'assignments.*.user_id' => 'required|exists:users,id',
+            'assignments.*.leads' => 'required|integer|min:0',
+
+        ]);
+
+        return DB::transaction(function () use ($validated) {
+            $poolQ = Lead::query()
+                ->whereNull('assigned_user')
+                ->where('lead_type', $validated['lead_type'])
+                ->where('lead_branch', $validated['lead_branch']);
+
+            if (! empty($validated['event_id'])) {
+                $poolQ->where('event_id', $validated['event_id']);
+            }
+            if (! empty($validated['lead_country'])) {
+                $poolQ->where('lead_country', $validated['lead_country']);
+            }
+
+            $poolIds = $poolQ->inRandomOrder()->lockForUpdate()->pluck('id')->toArray();
+            $available = count($poolIds);
+
+            $requested = array_sum(array_map(fn ($a) => (int) $a['leads'], $validated['assignments']));
+            $idx = 0;
+
+            foreach ($validated['assignments'] as $a) {
+                $userId = (int) $a['user_id'];
+                $count = max(0, (int) $a['leads']);
+                if ($count === 0 || $idx >= $available) {
+                    continue;
+                }
+
+                $slice = array_slice($poolIds, $idx, $count);
+                $idx += count($slice);
+
+                if (! $slice) {
+                    continue;
+                }
+
+                Lead::whereIn('id', $slice)->update([
+                    'assigned_user' => $userId,
+                    'assigned_branch' => $validated['assign_branch'],
+                    'assign_id' => 2,
+                ]);
+            }
+
+            $assigned = min($requested, $available);
+            $remaining = max(0, $available - $assigned);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Leads assigned successfully.',
+                'assigned' => $assigned,
+                'remaining' => $remaining,
+            ]);
+        });
+    }
+
+    public function branchManager(Request $request)
+    {
+        $userId = $request->header('id');
+        $user = User::with('branch')->findOrFail($userId);
+
+        $branchId = $user->branch_id;
+
+        $startOfWeek = Carbon::now()->startOfWeek();
+        $endOfWeek = Carbon::now()->endOfWeek();
+
+        $status_initial = 1;
+        $status_converted = 11;
+        $status_followup = 10;
+
+        $leadsAssigned = Lead::where('assigned_branch',$branchId)
+        ->whereBetween('created_at',[$startOfWeek,$endOfWeek])
+        ->count();
+
+        $contacted = Lead::where('assigned_branch',$branchId)
+        ->where('status_id', '!=' , $status_initial )->whereBetween('updated_at',[$startOfWeek,$endOfWeek])->count();
+
+                $converted = Lead::where('assigned_branch', $branchId)
+            ->where('status_id', $status_converted)
+            ->whereBetween('updated_at', [$startOfWeek, $endOfWeek])
+            ->count();
+
+         $followUps = Lead::where('assigned_branch', $branchId)
+            ->where('status_id', $status_followup)
+            ->count();
+              $perCounsellor = Lead::where('assigned_branch', $branchId)
+            ->selectRaw('assigned_user, 
+                COUNT(*) as total, 
+                SUM(CASE WHEN status_id != ? THEN 1 ELSE 0 END) as contacted,
+                SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as converted,
+                SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as followup',
+                [$status_initial, $status_converted, $status_followup]
+            )
+            ->groupBy('assigned_user')
+            ->with('user:id,name')
+            ->get();
+
+                    $weeklyTrend = Lead::where('assigned_branch', $branchId)
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+            
+                return response()->json([
+            'summary' => [
+                'assigned'       => $leadsAssigned,
+                'contacted'      => $contacted,
+                'converted'      => $converted,
+                'followUps'      => $followUps,
+                'conversionRate' => $leadsAssigned > 0 ? round(($converted / $leadsAssigned) * 100, 2) : 0,
+            ],
+            'perCounsellor' => $perCounsellor,
+            'weeklyTrend'   => $weeklyTrend,
+        ]);
 
 
+    }
+
+    
 }

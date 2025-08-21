@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('current_qualification');
             $table->string('ielts_or_english_test')->nullable();
             $table->string('soruce')->nullable();
-       
+
             $table->text('notes')->nullable();
             $table->foreignId('assigned_branch')->nullable()->constrained('branches')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('assigned_user')->nullable()->constrained('users')->cascadeOnUpdate()->restrictOnDelete();

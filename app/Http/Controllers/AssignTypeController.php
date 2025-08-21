@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AssignTypeController extends Controller
 {
-     public function CreateAssignType(Request $request)
+    public function CreateAssignType(Request $request)
     {
 
         try {
@@ -32,7 +32,7 @@ class AssignTypeController extends Controller
 
     public function AssignTypeList(Request $request)
     {
-        $list = AssignType::orderBy('created_at','desc')->get();
+        $list = AssignType::orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'status' => 'Request Success',
@@ -72,7 +72,7 @@ class AssignTypeController extends Controller
             $id = $request->id;
             $type = AssignType::find($id);
 
-            if($type) {
+            if ($type) {
                 $type->delete();
             } else {
                 return response()->json(['status' => 'failed', 'message' => 'This assign type is not found']);
