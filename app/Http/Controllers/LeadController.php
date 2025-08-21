@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LeadController extends Controller
 {
@@ -341,68 +342,132 @@ class LeadController extends Controller
     }
 
     public function branchManager(Request $request)
-    {
-        $userId = $request->header('id');
-        $user = User::with('branch')->findOrFail($userId);
+{
+    $userId = $request->header('id');
+    $user = User::with('branch')->findOrFail($userId);
 
-        $branchId = $user->branch_id;
+    $branchId = $user->branch_id;
 
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $endOfWeek = Carbon::now()->endOfWeek();
+    // Status IDs
+    $status_initial   = 1;
+    $status_converted = 11;
+    $status_followup  = 10;
 
-        $status_initial = 1;
-        $status_converted = 11;
-        $status_followup = 10;
-
-        $leadsAssigned = Lead::where('assigned_branch',$branchId)
-        ->whereBetween('created_at',[$startOfWeek,$endOfWeek])
-        ->count();
-
-        $contacted = Lead::where('assigned_branch',$branchId)
-        ->where('status_id', '!=' , $status_initial )->whereBetween('updated_at',[$startOfWeek,$endOfWeek])->count();
-
-                $converted = Lead::where('assigned_branch', $branchId)
-            ->where('status_id', $status_converted)
-            ->whereBetween('updated_at', [$startOfWeek, $endOfWeek])
-            ->count();
-
-         $followUps = Lead::where('assigned_branch', $branchId)
-            ->where('status_id', $status_followup)
-            ->count();
-              $perCounsellor = Lead::where('assigned_branch', $branchId)
-            ->selectRaw('assigned_user, 
-                COUNT(*) as total, 
-                SUM(CASE WHEN status_id != ? THEN 1 ELSE 0 END) as contacted,
-                SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as converted,
-                SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as followup',
-                [$status_initial, $status_converted, $status_followup]
-            )
-            ->groupBy('assigned_user')
-            ->with('user:id,name')
-            ->get();
-
-                    $weeklyTrend = Lead::where('assigned_branch', $branchId)
-            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-
-            
-                return response()->json([
-            'summary' => [
-                'assigned'       => $leadsAssigned,
-                'contacted'      => $contacted,
-                'converted'      => $converted,
-                'followUps'      => $followUps,
-                'conversionRate' => $leadsAssigned > 0 ? round(($converted / $leadsAssigned) * 100, 2) : 0,
-            ],
-            'perCounsellor' => $perCounsellor,
-            'weeklyTrend'   => $weeklyTrend,
-        ]);
+    $range = $request->input('range', 'week');
+   $now = Carbon::now();
+ switch ($range) {
+    case 'week':
+        $start = $now->copy()->startOfWeek();
+        $end   = $now->copy()->endOfWeek();
+        break;
+    case 'month':
+        $start = $now->copy()->startOfMonth();
+        $end   = $now->copy()->endOfMonth();
+        break;
+    case 'year':
+        $start = $now->copy()->startOfYear();
+        $end   = $now->copy()->endOfYear();
+        break;
+    case 'all':
+    default:
+        $start = null;
+        $end   = null;
+        break;
+}
 
 
+    // Helper function to apply date filter
+    $applyDateFilter = function ($query, $column = 'created_at') use ($start, $end) {
+        if ($start && $end) {
+            $query->whereBetween($column, [$start, $end]);
+        }
+        return $query;
+    };
+
+    // Total leads assigned
+    $leadsAssigned = $applyDateFilter(
+        Lead::where('assigned_branch', $branchId)
+    )->count();
+
+    // Contacted leads (updated this range, excluding initial)
+    $contacted = $applyDateFilter(
+        Lead::where('assigned_branch', $branchId)
+            ->where('status_id', '!=', $status_initial),
+        'updated_at'
+    )->count(); 
+    $pending = $applyDateFilter(
+        Lead::where('assigned_branch', $branchId)
+            ->where('status_id', $status_initial)
+    )->count();
+
+    // Converted leads
+    $converted = $applyDateFilter(
+        Lead::where('assigned_branch', $branchId)
+            ->where('status_id', $status_converted),
+        'updated_at'
+    )->count();
+
+    // Follow-ups
+    $followUps = $applyDateFilter(
+        Lead::where('assigned_branch', $branchId)
+            ->where('status_id', $status_followup),
+        'updated_at'
+    )->count();
+
+    // Per counsellor summary
+    $perCounsellorQuery = Lead::where('assigned_branch', $branchId);
+    if ($start && $end) {
+        $perCounsellorQuery->whereBetween('created_at', [$start, $end]);
     }
+
+    $perCounsellor = $perCounsellorQuery
+        ->selectRaw('assigned_user, 
+            COUNT(*) as total, 
+            SUM(CASE WHEN status_id != ? THEN 1 ELSE 0 END) as contacted,
+            SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as converted,
+            SUM(CASE WHEN status_id = ? THEN 1 ELSE 0 END) as followup',
+            [$status_initial, $status_converted, $status_followup]
+        )
+        ->groupBy('assigned_user')
+        ->with('user:id,name')
+        ->get();
+
+    // Trend (daily for week/month, monthly for year)
+    $trendQuery = Lead::where('assigned_branch', $branchId);
+    if ($start && $end) {
+        $trendQuery->whereBetween('created_at', [$start, $end]);
+    }
+
+    if ($range === 'year') {
+        $weeklyTrend = $trendQuery
+            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as period, COUNT(*) as count')
+            ->groupBy('period')
+            ->orderBy('period')
+            ->get();
+    } else {
+        $weeklyTrend = $trendQuery
+            ->selectRaw('DATE(created_at) as period, COUNT(*) as count')
+            ->groupBy('period')
+            ->orderBy('period')
+            ->get();
+    }
+
+    // Response
+    return response()->json([
+        'summary' => [
+            'assigned'       => $leadsAssigned,
+            'contacted'      => $contacted,
+            'converted'      => $converted,
+            'followUps'      => $followUps,
+            'pendingCall' => $pending,
+            'conversionRate' => $leadsAssigned > 0 ? round(($converted / $leadsAssigned) * 100, 2) : 0,
+        ],
+        'perCounsellor' => $perCounsellor,
+        'trend'         => $weeklyTrend,
+        'range'         => $range,
+    ]);
+}
+
 
     
 }
