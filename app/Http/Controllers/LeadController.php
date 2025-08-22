@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 class LeadController extends Controller
 {
     public function CreateLead(Request $request)
@@ -33,6 +32,7 @@ class LeadController extends Controller
                 'created_by' => 'nullable|exists:users,id',
                 'lead_type' => 'nullable|exists:lead_types,id',
                 'event_id' => 'nullable|exists:events,id',
+                'assigned_at' => 'nullable'
 
             ]);
 
@@ -82,7 +82,16 @@ class LeadController extends Controller
             $query->where('assigned_user', $user->id);
         }
 
-        $list = $query->get();
+        $list = $query->get()->map(function($lead) {
+    $lead->is_new = false;
+
+    if ($lead->assigned_at instanceof Carbon) {
+        $lead->is_new = $lead->assigned_at->gt(now()->subHours(24));
+    }
+
+    return $lead;
+});
+
 
         return response()->json(['status' => 'success', 'list' => $list]);
     }
@@ -138,6 +147,7 @@ class LeadController extends Controller
                 'assign_id',
                 'lead_country',
                 'lead_branch',
+                'assigned_at'
             ]);
             $lead->fill($data)->save();
 
@@ -261,6 +271,7 @@ class LeadController extends Controller
                     'assigned_user' => $assignment['user_id'],
                     'assigned_branch' => $validated['assign_branch'],
                     'assign_id' => 2,
+                    'assigned_at' => now()
                 ]);
             }
 
@@ -325,6 +336,7 @@ class LeadController extends Controller
                     'assigned_user' => $userId,
                     'assigned_branch' => $validated['assign_branch'],
                     'assign_id' => 2,
+                     'assigned_at' => now()
                 ]);
             }
 

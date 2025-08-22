@@ -26,6 +26,7 @@ class Lead extends Model
         'assign_id',
         'lead_country',
         'lead_branch',
+        'assigned_at'
     ];
 
     public function status()
@@ -72,4 +73,9 @@ class Lead extends Model
     {
         return $this->hasMany(ManagerNote::class);
     }
+
+    protected $casts = [
+    'assigned_at' => 'datetime',
+];
+
 }
