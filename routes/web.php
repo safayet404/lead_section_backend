@@ -69,9 +69,8 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::post('/lead-assign', [LeadController::class, 'AssignLeads']);
     Route::post('/assign-lead', [LeadController::class, 'AssignSave']);
 
-
     Route::get('/summary', [LeadController::class, 'branchManager']);
-
+    Route::get('/admin-lead-summary', [LeadController::class, 'AdminReport']);
 
 });
 
