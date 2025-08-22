@@ -82,6 +82,8 @@ class LeadController extends Controller
             $query->where('assigned_user', $user->id);
         }
 
+        $query->orderByDesc('assigned_at');
+
         $list = $query->get()->map(function($lead) {
     $lead->is_new = false;
 
@@ -357,6 +359,13 @@ class LeadController extends Controller
         $userId = $request->header('id');
         $user = User::with('branch')->findOrFail($userId);
 
+          if ($user->role_id != 3) {
+        return response()->json([
+            'status' => 'failed',
+            'message' => 'Unauthorized: Only branch managers can access this resource.'
+        ], 403);
+    }
+
         $branchId = $user->branch_id;
 
         // Status IDs
@@ -407,12 +416,7 @@ class LeadController extends Controller
         };
 
         // Total leads assigned
-        $totalLeads = $applyDateFilter(
-            $applyLeadTypeFilter(
-
-                Lead::where('assigned_branch', $branchId)
-            )
-        )->count();
+      
         $leadsAssigned = $applyDateFilter(
             $applyLeadTypeFilter(
 
@@ -500,7 +504,7 @@ class LeadController extends Controller
         // Response
         return response()->json([
             'summary' => [
-                'total' => $totalLeads,
+            
                 'assigned' => $leadsAssigned,
                 'contacted' => $contacted,
                 'converted' => $converted,
@@ -516,6 +520,19 @@ class LeadController extends Controller
 
     public function AdminReport(Request $request)
     {
+
+            $userId = $request->header('id');
+                $user = User::findOrFail($userId);
+
+              if ($user->role_id != 1) {
+        return response()->json([
+            'status' => 'failed',
+            'message' => 'Unauthorized: Only branch managers can access this resource.'
+        ], 403);
+    }
+
+
+
         $status_initial = 1;
         $status_converted = 11;
         $status_followup = 10;
