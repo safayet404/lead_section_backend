@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\LeadsImport;
 use App\Models\Lead;
 use App\Models\User;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+
 class LeadController extends Controller
 {
     public function CreateLead(Request $request)
@@ -64,6 +69,97 @@ class LeadController extends Controller
             return response()->json(['status' => 'success', 'message' => $e->getMessage()]);
         }
     }
+
+    public function uploadLeads(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv|max:10240', // 10MB limit
+    ]);
+
+    try {
+        $file = $request->file('file');
+        $spreadsheet = IOFactory::load($file->getRealPath());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        // Assuming the first row is the header
+        $header = array_shift($rows);
+        $leadsCreated = 0;
+
+        foreach ($rows as $row) {
+            // Map the Excel columns to your database columns
+            $leadData = array_combine($header, $row);
+
+            // You might need to validate and clean the data from the Excel file
+            $data = [
+                'lead_date' => $leadData['lead_date'],
+                'name' => $leadData['name'],
+                'email' => $leadData['email'],
+                'phone' => $leadData['phone'],
+                'interested_course' => $leadData['interested_course'],
+                'interested_country' => $leadData['interested_country'],
+                'current_qualification' => $leadData['current_qualification'],
+                'ielts_or_english_test' => $leadData['ielts_or_english_test'] ?? null,
+                'soruce' => $leadData['soruce'] ?? null,
+                'status_id' => $leadData['status_id'] ?? 1, // Default to 1
+                'notes' => $leadData['notes'] ?? null,
+                'assigned_branch' => $leadData['assigned_branch'] ?? null,
+                'assigned_user' => $leadData['assigned_user'] ?? null,
+                'lead_type' => $leadData['lead_type'] ?? null,
+                'event_id' => $leadData['event_id'] ?? null,
+                'created_by' => $request->header('id')
+            ];
+
+            // Create the lead
+            Lead::create($data);
+            $leadsCreated++;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => "Successfully uploaded and created $leadsCreated leads."
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+}
+
+
+public function importLeads(Request $request)
+{
+    try {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv',
+            'lead_country' => 'required',
+            'lead_branch' => 'required',
+            'lead_type' => 'nullable|exists:lead_types,id',
+            'event_id' => 'nullable|exists:events,id',
+            'created_by' => 'required|exists:users,id',
+        ]);
+
+        $extraData = [
+            'lead_type' => $request->lead_type,
+            'event_id' => $request->event_id,
+            'lead_country' => $request->lead_country,
+            'lead_branch' => $request->lead_branch,
+            'created_by' => $request->created_by,
+        ];
+
+        // Pass the extra data array to the constructor
+        Excel::import(new LeadsImport($extraData), $request->file('file'));
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Leads imported successfully'
+        ]);
+    } catch (Exception $e) {
+        return response()->json([
+            'status' => 'error', // Changed from 'success' to 'error'
+            'message' => $e->getMessage()
+        ]);
+    }
+}
 
     public function LeadList(Request $request)
     {

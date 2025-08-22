@@ -59,7 +59,9 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 // Lead
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
-    Route::post('/create-lead', [LeadController::class, 'CreateLead']);
+    Route::post('/create-lead', [LeadController::class, 'importLeads']);
+    Route::post('/upload-lead', [LeadController::class, 'uploadLeads']);
+    Route::post('/file-upload', [LeadController::class, 'CreateLead']);
     Route::get('/lead-list', [LeadController::class, 'LeadList']);
     Route::post('/lead-update', [LeadController::class, 'LeadUpdate']);
     Route::delete('/lead-delete', [LeadController::class, 'DeleteLead']);
