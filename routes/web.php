@@ -4,6 +4,7 @@ use App\Http\Controllers\AssignTypeController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ExpressApplicationController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\LeadTypeController;
@@ -125,3 +126,9 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::delete('/note-delete', [NoteController::class, 'NoteDelete']);
     Route::get('/single-note', [NoteController::class, 'SingleNote']);
 });
+
+
+
+// Express Application
+
+Route::post('/express-application',[ExpressApplicationController::class, 'CreateApplication']);
