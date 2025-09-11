@@ -31,7 +31,7 @@ return new class extends Migration
         // 3. Country-Intake Pivot
         Schema::create('country_intake', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             $table->foreignId('intake_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
 
@@ -49,7 +49,7 @@ return new class extends Migration
         // 5. Pivot: country_intake_university
         Schema::create('country_intake_university', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             $table->foreignId('intake_id')->constrained()->cascadeOnDelete();
             $table->foreignId('university_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
@@ -67,7 +67,7 @@ return new class extends Migration
         // 7. Pivot: country_intake_university_course_type
         Schema::create('country_intake_university_course_type', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             $table->foreignId('intake_id')->constrained()->cascadeOnDelete();
             $table->foreignId('university_id')->constrained()->cascadeOnDelete();
             $table->foreignId('course_type_id')->constrained()->cascadeOnDelete();
@@ -79,7 +79,7 @@ return new class extends Migration
         // 8. Courses Table
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();
             $table->foreignId('intake_id')->constrained()->cascadeOnDelete();
             $table->foreignId('university_id')->constrained()->cascadeOnDelete();
             $table->foreignId('course_type_id')->constrained()->cascadeOnDelete();
