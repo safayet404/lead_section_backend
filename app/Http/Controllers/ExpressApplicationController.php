@@ -64,4 +64,14 @@ class ExpressApplicationController extends Controller
             ]);
         }
     }
+
+    public function ExpressApplicationList(Request $request)
+    {
+        try {
+            $list = ExpressApplication::get();
+               return response()->json(['status' => 'success', 'message' => 'Express Application List', "list" => $list]);
+        } catch (Exception $e) {
+           return response()->json(['status' => 'success', 'message' => $e->getMessage()]);
+        }
+    }
 }

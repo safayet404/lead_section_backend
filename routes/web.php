@@ -132,3 +132,4 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 // Express Application
 
 Route::post('/express-application',[ExpressApplicationController::class, 'CreateApplication']);
+Route::get('/express-list', [ExpressApplicationController::class, 'ExpressApplicationList']);
