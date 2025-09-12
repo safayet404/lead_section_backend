@@ -12,6 +12,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
+use App\Models\ExpressApplication;
 use App\Models\Role;
 use Illuminate\Support\Facades\Route;
 
@@ -133,3 +134,4 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 
 Route::post('/express-application',[ExpressApplicationController::class, 'CreateApplication']);
 Route::get('/express-list', [ExpressApplicationController::class, 'ExpressApplicationList']);
+Route::get('/single-express',[ExpressApplicationController::class,'SingleExpressApplication']);

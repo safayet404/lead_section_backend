@@ -74,4 +74,16 @@ class ExpressApplicationController extends Controller
            return response()->json(['status' => 'success', 'message' => $e->getMessage()]);
         }
     }
+
+    public function SingleExpressApplication(Request $request)  {
+        try {
+            $id = $request->id;
+
+            $application = ExpressApplication::find($id);
+
+            return response()->json(['status' => 'success', 'application' => $application]);
+        } catch (Exception $e) {
+           return response()->json(['status' => 'success', 'Single Application' => $e->getMessage()]);
+        }
+    }
 }
