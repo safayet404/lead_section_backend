@@ -19,15 +19,16 @@ class CourseController extends Controller
                 'course_type_id' => 'string|exists:course_types,id',
                 'country_id' => 'string|exists:countries,id',
                 'course_duration' => 'string',
-                'tution_fee' => 'decimal',
-                'academic_requirement' => 'text',
-                'english_requirement' => 'text',
+               'tution_fee' => 'nullable|numeric',
+
+                  'academic_requirement' => 'nullable|string',
+    'english_requirement' => 'nullable|string',
             ]);
 
             Course::create([
                 'name' => $validated['name'],
                 'university_id' => $validated['university_id'],
-                'country_id' => $validated['country_id'],
+              
                 'intake_id' => $validated['intake_id'],
                 'course_type_id' => $validated['course_type_id'],
                 'country_id' => $validated['country_id'],

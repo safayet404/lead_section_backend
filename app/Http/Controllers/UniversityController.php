@@ -12,11 +12,13 @@ class UniversityController extends Controller
     {
         try {
             $validated = $request->validate([
-                'name' => 'string'
+                'name' => 'string',
+                'country_id' => 'exists:countries,id'
             ]);
 
             University::create([
-                'name' => $validated['name']
+                'name' => $validated['name'],
+                'country_id' => $validated['country_id']
             ]);
             return response()->json(['status' => 'success', 'message' => 'University Created Succesfully']);
         } catch (Exception $e) {
