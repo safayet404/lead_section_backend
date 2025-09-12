@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Country;
 use App\Models\Course;
+use App\Models\CourseType;
+use App\Models\Intake;
+use App\Models\University;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -48,5 +52,29 @@ class CourseController extends Controller
         $list = Course::all();
                     return response()->json(['status' => 'success', 'list' => $list]);
 
+    }
+
+     public function Countries()
+    {
+        return Country::all();
+    }
+
+    public function IntakeByCountry($countryId){
+        return Intake::whereHas('courses', fn($q) => $q->where('country_id',$countryId))->get();
+    }
+
+    public function Universities($countryId,$intakeId){
+        return University::where('country_id',$countryId)->whereHas('courses', fn($q) => $q->where('intake_id',$intakeId))->get();
+    }
+
+    public function CourseTypes($countryId,$intakeId,$universityId){
+        return CourseType::whereHas('courses', function ($q) use ($countryId,$intakeId,$universityId){
+            $q->where('country_id',$countryId)->where('intake_id',$intakeId)->where('university_id',$universityId);
+        } )->get();
+    }
+
+    public function Courses($countryId,$intakeId,$universityId,$courseTypeId)
+    {
+        return Course::with(['university','country','intake','courseType'])->where('country_id',$countryId)->where('intake_id',$intakeId)->where('university_id',$universityId)->where('course_type_id',$courseTypeId)->get();
     }
 }
