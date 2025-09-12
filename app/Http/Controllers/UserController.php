@@ -65,7 +65,7 @@ class UserController extends Controller
                     $token,
                     60 * 24 * 30,      // minutes
                     '/',               // path
-                    'localhost',       // domain - explicitly set to localhost
+                    // 'localhost',       // domain - explicitly set to localhost
                     false,             // secure
                     true,              // httpOnly
                     false,             // raw

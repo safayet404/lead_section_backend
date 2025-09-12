@@ -3,13 +3,17 @@
 use App\Http\Controllers\AssignTypeController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CountryController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseTypeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ExpressApplicationController;
+use App\Http\Controllers\IntakeController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\LeadTypeController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
 use App\Models\ExpressApplication;
@@ -111,8 +115,8 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 // County
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
-    Route::post('/create-country', [CountryController::class, 'CreateCountry']);
     Route::get('/country-list', [CountryController::class, 'CountryList']);
+    Route::post('/create-country', [CountryController::class, 'CreateCountry']);
     Route::put('/country-update', [CountryController::class, 'CountryUpdate']);
     Route::delete('/country-delete', [CountryController::class, 'CountryDelete']);
     Route::get('/single-country', [CountryController::class, 'SingleCountry']);
@@ -135,3 +139,27 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 Route::post('/express-application',[ExpressApplicationController::class, 'CreateApplication']);
 Route::get('/express-list', [ExpressApplicationController::class, 'ExpressApplicationList']);
 Route::get('/single-express',[ExpressApplicationController::class,'SingleExpressApplication']);
+
+
+// University 
+
+Route::post('/create-university', [UniversityController::class,'CreateUniversity'] );
+Route::get('/all-university', [UniversityController::class,'AllUniversity'] );
+
+// Course Type
+
+Route::post('/create-type', [CourseTypeController::class,'CreateCourseType'] );
+Route::get('/all-course-type', [CourseTypeController::class,'AllCourseType'] );
+
+// Intake
+
+
+Route::post('/create-intake', [IntakeController::class,'CreateIntake'] );
+Route::get('/all-intake', [IntakeController::class,'AllIntake'] );
+
+
+// Course 
+
+Route::post('/create-course', [CourseController::class,'CreateCourse'] );
+Route::get('/all-course', [CourseController::class,'AllCourse'] );
+
