@@ -63,16 +63,18 @@ class CourseController extends Controller
         return Intake::whereHas('courses', fn($q) => $q->where('country_id',$countryId))->get();
     }
 
-    public function Universities($countryId,$intakeId){
-        return University::where('country_id',$countryId)->whereHas('courses', fn($q) => $q->where('intake_id',$intakeId))->get();
-    }
-
-    public function CourseTypes($countryId,$intakeId,$universityId){
-        return CourseType::whereHas('courses', function ($q) use ($countryId,$intakeId,$universityId){
-            $q->where('country_id',$countryId)->where('intake_id',$intakeId)->where('university_id',$universityId);
+      public function CourseTypes($countryId,$intakeId){
+        return CourseType::whereHas('courses', function ($q) use ($countryId,$intakeId){
+            $q->where('country_id',$countryId)->where('intake_id',$intakeId);
         } )->get();
     }
 
+
+    public function Universities($countryId,$intakeId,$courseTypeId){
+        return University::where('country_id',$countryId)->whereHas('courses',function($q) use ($intakeId,$courseTypeId){$q->where('intake_id',$intakeId)->where('course_type_id',$courseTypeId);} )->get();
+    }
+
+  
     public function Courses($countryId,$intakeId,$universityId,$courseTypeId)
     {
         return Course::with(['university','country','intake','courseType'])->where('country_id',$countryId)->where('intake_id',$intakeId)->where('university_id',$universityId)->where('course_type_id',$courseTypeId)->get();

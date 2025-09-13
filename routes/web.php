@@ -167,6 +167,8 @@ Route::get('/all-course', [CourseController::class,'AllCourse'] );
 
 Route::get('/countries', [CourseController::class, 'Countries']);
 Route::get('/intakes/{countryId}', [CourseController::class, 'IntakeByCountry']);
-Route::get('/universities/{countryId}/{intakeId}', [CourseController::class, 'Universities']);
-Route::get('/course-types/{countryId}/{intakeId}/{universityId}', [CourseController::class, 'CourseTypes']);
+Route::get('/course-types/{countryId}/{intakeId}', [CourseController::class, 'CourseTypes']);
+
+Route::get('/universities/{countryId}/{intakeId}/{courseTypeId}', [CourseController::class, 'Universities']);
+
 Route::get('/courses/{countryId}/{intakeId}/{universityId}/{courseTypeId}', [CourseController::class, 'Courses']);
