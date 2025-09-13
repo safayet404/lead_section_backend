@@ -193,7 +193,7 @@ Route::get('/all-application-status', [ApplicationStatusController::class,'AllSt
 // Students
 
 Route::post('/create-student', [StudentController::class,'CreateStudent'] );
-Route::get('/all-application-status', [StudentController::class,'AllStudents'] );
+Route::get('/all-students', [StudentController::class,'AllStudents'] );
 
 // Applications
 

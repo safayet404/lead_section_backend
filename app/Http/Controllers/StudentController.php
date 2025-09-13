@@ -19,7 +19,8 @@ class StudentController extends Controller
                 'date_of_birth' => 'required|string', 
                 'passport_number' => 'required|string', 
                 'passport_country' => 'required|string', 
-                'branch_id' => 'nullable|string|exist:branches,id', 
+                           'branch_id'        => 'nullable|exists:branches,id', // ✅ fixed
+
             ]);
 
             Student::create([
@@ -30,7 +31,8 @@ class StudentController extends Controller
                 'date_of_birth' =>$validated['date_of_birth'], 
                 'passport_number' => $validated['passport_number'], 
                 'passport_country' => $validated['passport_country'], 
-                'branch_id' => 'nullable|string|exist:branches,id', 
+                           'branch_id'        => $validated['branch_id'] ?? null, // ✅ actual value
+
             ]);
 
             return response()->json([
