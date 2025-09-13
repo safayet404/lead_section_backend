@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ApplicationStatusController;
 use App\Http\Controllers\AssignTypeController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\ChannelPartnerController;
 use App\Http\Controllers\CountryController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseTypeController;
@@ -13,9 +16,11 @@ use App\Http\Controllers\LeadStatusController;
 use App\Http\Controllers\LeadTypeController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
+use App\Models\ChannelPartner;
 use App\Models\ExpressApplication;
 use App\Models\Role;
 use Illuminate\Support\Facades\Route;
@@ -172,3 +177,25 @@ Route::get('/course-types/{countryId}/{intakeId}', [CourseController::class, 'Co
 Route::get('/universities/{countryId}/{intakeId}/{courseTypeId}', [CourseController::class, 'Universities']);
 
 Route::get('/courses/{countryId}/{intakeId}/{universityId}/{courseTypeId}', [CourseController::class, 'Courses']);
+
+
+// Channel Partner
+
+Route::post('/create-channel', [ChannelPartnerController::class,'CreateChannelPartner'] );
+Route::get('/all-channel', [ChannelPartnerController::class,'AllChannelPartner'] );
+
+
+// Application Status
+
+Route::post('/create-application-status', [ApplicationStatusController::class,'CreateApplicationStatus'] );
+Route::get('/all-application-status', [ApplicationStatusController::class,'AllStatus'] );
+
+// Students
+
+Route::post('/create-student', [StudentController::class,'CreateStudent'] );
+Route::get('/all-application-status', [StudentController::class,'AllStudents'] );
+
+// Applications
+
+Route::post('/create-application', [ApplicationController::class,'CreateApplication'] );
+Route::get('/all-application', [ApplicationController::class,'ApplicationList'] );

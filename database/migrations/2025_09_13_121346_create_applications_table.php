@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('intake_id')->nullable()->constrained('intakes');
             $table->foreignId('course_type_id')->nullable()->constrained('course_types');
             $table->foreignId('university_id')->nullable()->constrained('universities');
-            $table->foreignId('course_id')->nullable()->constrained('courses');
+            $table->foreignId('')->nullable()->constrained('courses');
             $table->string('passport_country');
             $table->foreignId('channel_partner_id')->nullable()->constrained('channel_partners');
             $table->foreignId('application_status_id')->nullable()->constrained('application_statuses');
