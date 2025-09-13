@@ -199,3 +199,11 @@ Route::get('/all-students', [StudentController::class,'AllStudents'] );
 
 Route::post('/create-application', [ApplicationController::class,'CreateApplication'] );
 Route::get('/all-application', [ApplicationController::class,'ApplicationList'] );
+
+Route::middleware([TokenVerificationMiddleware::class])->group(function () {
+  
+Route::post('/create-application', [ApplicationController::class,'CreateApplication'] );
+Route::get('/all-application', [ApplicationController::class,'ApplicationList'] );
+
+});
+

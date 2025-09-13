@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Application;
+use App\Models\User;
 use Exception;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Http\Request;
 
 class ApplicationController extends Controller
@@ -11,6 +13,22 @@ class ApplicationController extends Controller
     public function CreateApplication(Request $request)
     {
         try {
+             $id = $request->header('id');
+
+          if (!$id) {
+            return response()->json([
+                'status' => 'failed', 
+                'message' => 'User ID not provided in header'
+            ], 400);
+        }
+        
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'status' => 'failed', 
+                'message' => 'User not found'
+            ], 404);
+        }
             $validated = $request->validate([
                 'student_id' => 'exists:students,id',
                 'country_id' => 'exists:countries,id',
@@ -34,8 +52,8 @@ class ApplicationController extends Controller
                 'course_id' => $validated['course_id'],
                 'channel_partner_id' => $validated['channel_partner_id'],
                 'application_status_id' => $validated['application_status_id'], 
-                'branch_id' =>$validated['branch_id'],
-                'created_by' => $validated['created_by'],
+                'branch_id' => $user->branch_id,
+                'created_by' => $id,
                 'passport_country' => $validated['passport_country'],
             ]);
 
@@ -50,6 +68,6 @@ class ApplicationController extends Controller
     public function ApplicationList(Request $request)
     {
         return Application::all();
-        
+
     }
 }
