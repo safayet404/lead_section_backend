@@ -32,7 +32,7 @@ class ApplicationController extends Controller
             ], 404);
         }
             $validated = $request->validate([
-                'student_id' => 'exists:students,id',
+              
                 'country_id' => 'exists:countries,id',
                 'intake_id' => 'exists:intakes,id',
                 'course_type_id' => 'exists:course_types,id',
@@ -89,45 +89,45 @@ class ApplicationController extends Controller
         }
 
         $validated = $request->validate([
-             'first_name'       => 'required|string',
+            'first_name'       => 'required|string',
             'last_name'        => 'required|string',
-            'email'            => 'required|email',
+            'email'            => 'required|email|unique:students,email',
             'phone'            => 'required|string',
-            'date_of_birth'    => 'required|date', // better than string
+            'date_of_birth'    => 'required|date',
             'passport_number'  => 'required|string',
             'passport_country' => 'required|string',
-            'branch_id'        => 'nullable|exists:branches,id',
 
-             // Application fields
-            'country_id'           => 'exists:countries,id',
-            'intake_id'            => 'exists:intakes,id',
-            'course_type_id'       => 'exists:course_types,id',
-            'university_id'        => 'exists:universities,id',
-            'course_id'            => 'exists:courses,id',
+           
+            'country_id'           => 'required|exists:countries,id',
+            'intake_id'            => 'required|exists:intakes,id',
+            'course_type_id'       => 'required|exists:course_types,id',
+            'university_id'        => 'required|exists:universities,id',
+            'course_id'            => 'required|exists:courses,id',
             'channel_partner_id'   => 'nullable|exists:channel_partners,id',
-            'application_status_id'=> 'exists:application_statuses,id',
+            'application_status_id'=> 'nullable|exists:application_statuses,id',
         ]);
 
         $student = Student::create([
-            'first_name'       => $validated['first_name'],
+          'first_name'       => $validated['first_name'],
             'last_name'        => $validated['last_name'],
             'email'            => $validated['email'],
             'phone'            => $validated['phone'],
             'date_of_birth'    => $validated['date_of_birth'],
             'passport_number'  => $validated['passport_number'],
             'passport_country' => $validated['passport_country'],
-            'branch_id'        => $validated['branch_id'] ?? $user->branch_id,
+            'branch_id'        => $user->branch_id,
         ]);
 
+   
          $application = Application::create([
-            'student_id'           => $student->id,
+             'student_id'           => $student->id, // Use the created student's ID
             'country_id'           => $validated['country_id'],
             'intake_id'            => $validated['intake_id'],
             'course_type_id'       => $validated['course_type_id'],
             'university_id'        => $validated['university_id'],
             'course_id'            => $validated['course_id'],
             'channel_partner_id'   => $validated['channel_partner_id'] ?? null,
-            'application_status_id'=> $validated['application_status_id'],
+            'application_status_id'=> $validated['application_status_id'] ?? 1, // Default to 1 if not provided
             'branch_id'            => $user->branch_id,
             'created_by'           => $user->id,
             'passport_country'     => $validated['passport_country'],
@@ -135,12 +135,16 @@ class ApplicationController extends Controller
 
         DB::commit();
 
-             return response()->json([
+            return response()->json([
             'status' => 'success',
             'message' => 'Student and Application created successfully',
-            'student_id' => $student->id,
-            'application_id' => $application->id,
-        ]);
+            'data' => [
+                'student_id' => $student->id,
+                'application_id' => $application->id,
+                'student' => $student,
+                'application' => $application
+            ]
+        ], 201);
 
 
         } catch (Exception $e) {
@@ -148,6 +152,7 @@ class ApplicationController extends Controller
 
         return response()->json([
             'status' => 'failed',
+            
             'message' => $e->getMessage()
         ], 500);
         }

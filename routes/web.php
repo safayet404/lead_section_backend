@@ -203,7 +203,10 @@ Route::get('/all-application', [ApplicationController::class,'ApplicationList'] 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
   
 Route::post('/create-application', [ApplicationController::class,'CreateApplication'] );
+Route::post('/student-application', [ApplicationController::class,'CreateStudentWithApplication'] );
 Route::get('/all-application', [ApplicationController::class,'ApplicationList'] );
+
+
 
 });
 
