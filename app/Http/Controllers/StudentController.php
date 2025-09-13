@@ -23,7 +23,7 @@ class StudentController extends Controller
 
             ]);
 
-            Student::create([
+            $student = Student::create([
                 'first_name' => $validated['first_name'], 
                 'last_name' => $validated['last_name'], 
                 'email' => $validated['email'], 
@@ -37,7 +37,8 @@ class StudentController extends Controller
 
             return response()->json([
                 'status' => "success",
-                'message' => "Student Created Successfully"
+                'message' => "Student Created Successfully",
+                'id' => $student->id
             ]);
         } catch (Exception $e) {
               return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
