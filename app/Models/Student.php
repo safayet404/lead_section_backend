@@ -14,7 +14,11 @@ class Student extends Model
         'date_of_birth',
         'passport_number',
         'passport_country',
-        'branch_id'
+        'branch_id',
+        'address',
+        'city',
+        'gender',
+        'visa_refusal'
     ];
 
     public function branch()

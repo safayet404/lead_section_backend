@@ -17,6 +17,8 @@ class Application extends Model
         'channel_partner_id',
         'application_status_id',
         'branch_id',
-        'created_by'
+        'created_by',
+        'counsellor_phone',
+        'counsellor_email'
     ];
 }

@@ -96,6 +96,10 @@ class ApplicationController extends Controller
             'date_of_birth'    => 'required|date',
             'passport_number'  => 'required|string',
             'passport_country' => 'required|string',
+            'address' => 'nullable|string',
+            'city' => 'nullable|string',
+            'gender' => 'nullable',
+            'visa_refusal' => 'nullable',
 
            
             'country_id'           => 'required|exists:countries,id',
@@ -105,6 +109,8 @@ class ApplicationController extends Controller
             'course_id'            => 'required|exists:courses,id',
             'channel_partner_id'   => 'nullable|exists:channel_partners,id',
             'application_status_id'=> 'nullable|exists:application_statuses,id',
+            'counsellor_phone' => 'nullable|string',
+            'counsellor_email' => 'nullable|string'
         ]);
 
         $student = Student::create([
@@ -116,6 +122,12 @@ class ApplicationController extends Controller
             'passport_number'  => $validated['passport_number'],
             'passport_country' => $validated['passport_country'],
             'branch_id'        => $user->branch_id,
+            'address' => $validated['address'],
+            'city' => $validated['city'],
+            'gender' => $validated['gender'],
+            'visa_refusal' => $validated['visa_refusal'],
+         
+          
         ]);
 
    
@@ -131,6 +143,8 @@ class ApplicationController extends Controller
             'branch_id'            => $user->branch_id,
             'created_by'           => $user->id,
             'passport_country'     => $validated['passport_country'],
+              'counsellor_phone' => $validated['counsellor_phone'],
+            'counsellor_email' => $validated['counsellor_email']
         ]);
 
         DB::commit();
