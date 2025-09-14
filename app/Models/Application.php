@@ -21,4 +21,9 @@ class Application extends Model
         'counsellor_phone',
         'counsellor_email'
     ];
+
+      public function files()
+    {
+        return $this->hasMany(StudentApplicationFile::class, 'application_id');
+    }
 }

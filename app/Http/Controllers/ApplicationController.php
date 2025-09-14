@@ -113,7 +113,7 @@ class ApplicationController extends Controller
             'application_status_id'=> 'nullable|exists:application_statuses,id',
             'counsellor_phone' => 'nullable|string',
             'counsellor_email' => 'nullable|string',
-            'files.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'files.*' => 'file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $student = Student::create([
