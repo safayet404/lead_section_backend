@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Application;
 use App\Models\Student;
+use App\Models\StudentApplicationFile;
 use App\Models\User;
 use Exception;
-use Illuminate\Container\Attributes\Auth;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ApplicationController extends Controller
 {
@@ -110,7 +112,8 @@ class ApplicationController extends Controller
             'channel_partner_id'   => 'nullable|exists:channel_partners,id',
             'application_status_id'=> 'nullable|exists:application_statuses,id',
             'counsellor_phone' => 'nullable|string',
-            'counsellor_email' => 'nullable|string'
+            'counsellor_email' => 'nullable|string',
+            'files.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $student = Student::create([
@@ -146,6 +149,28 @@ class ApplicationController extends Controller
               'counsellor_phone' => $validated['counsellor_phone'],
             'counsellor_email' => $validated['counsellor_email']
         ]);
+
+         if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    // Store file on public disk
+                    $path = $file->store('applications/' . $application->id, 'public');
+
+                    StudentApplicationFile::create([
+                        'application_id' => $application->id,
+                        'file_path' => $path,
+                        'file_type' => null,
+                        'original_name' => $file->getClientOriginalName(),
+                        'file_size' => $file->getSize()
+                    ]);
+                }
+            }
+
+            // Reload application with files & add full URL for each
+            $application->load('files');
+            $application->files->transform(function ($file) {
+                $file->file_url = Storage::url($file->file_path);
+                return $file;
+            });
 
         DB::commit();
 
