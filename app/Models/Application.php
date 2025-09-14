@@ -69,5 +69,9 @@ class Application extends Model
     public function channelPartner()
     {
         return $this->belongsTo(ChannelPartner::class);
+    } 
+    public function user()
+    {
+        return $this->belongsTo(User::class,'created_by');
     }
 }

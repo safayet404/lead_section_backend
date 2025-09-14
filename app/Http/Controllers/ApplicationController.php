@@ -199,7 +199,7 @@ class ApplicationController extends Controller
 
     public function ApplicationList(Request $request)
     {
-        return Application::with('student','country','intake','courseType','university','course','branch','applicationStatus','channelPartner')->get();
+        return Application::with('student','country','user', 'intake','courseType','university','course','branch','applicationStatus','channelPartner')->get();
 
     }
 }
