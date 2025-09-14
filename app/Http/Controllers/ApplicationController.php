@@ -142,7 +142,7 @@ class ApplicationController extends Controller
             'university_id'        => $validated['university_id'],
             'course_id'            => $validated['course_id'],
             'channel_partner_id'   => $validated['channel_partner_id'] ?? null,
-            'application_status_id'=> $validated['application_status_id'] ?? 1, // Default to 1 if not provided
+            'application_status_id'=> $validated['application_status_id'] ?? 1, // 
             'branch_id'            => $user->branch_id,
             'created_by'           => $user->id,
             'passport_country'     => $validated['passport_country'],
@@ -199,7 +199,7 @@ class ApplicationController extends Controller
 
     public function ApplicationList(Request $request)
     {
-        return Application::all();
+        return Application::with('student','country','intake','courseType','university','course','branch','applicationStatus','channelPartner')->get();
 
     }
 }

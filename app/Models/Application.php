@@ -26,4 +26,48 @@ class Application extends Model
     {
         return $this->hasMany(StudentApplicationFile::class, 'application_id');
     }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function intake()
+    {
+        return $this->belongsTo(Intake::class);
+    }
+
+    public function courseType()
+    {
+        return $this->belongsTo(CourseType::class);
+    }
+
+    public function university(){
+        return $this->belongsTo(University::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function applicationStatus()
+    {
+        return $this->belongsTo(ApplicationStatus::class);
+    }
+
+    public function channelPartner()
+    {
+        return $this->belongsTo(ChannelPartner::class);
+    }
 }
