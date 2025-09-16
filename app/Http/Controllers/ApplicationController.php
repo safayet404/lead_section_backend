@@ -202,4 +202,9 @@ class ApplicationController extends Controller
         return Application::with('student','country','files','user', 'intake','courseType','university','course','branch','applicationStatus','channelPartner')->latest()->get();
 
     }
+
+    public function SingleApplication($id)
+    {
+        return Application::with('student','country','files','user', 'intake','courseType','university','course','branch','applicationStatus','channelPartner')->find($id);
+    }
 }
