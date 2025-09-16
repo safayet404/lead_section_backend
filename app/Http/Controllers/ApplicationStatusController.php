@@ -14,17 +14,17 @@ class ApplicationStatusController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string',
                 'color' => 'required|string',
-                
+
             ]);
 
             ApplicationStatus::create([
                 'name' => $validated['name'],
-                'color' => $validated['color']
+                'color' => $validated['color'],
             ]);
 
-            return response()->json(['status' => 'success','message' => 'Application Status Created' ]);
+            return response()->json(['status' => 'success', 'message' => 'Application Status Created']);
         } catch (Exception $e) {
-            return response()->json(['status' => 'failed','message' => $e->getMessage()]);
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
@@ -32,4 +32,4 @@ class ApplicationStatusController extends Controller
     {
         return ApplicationStatus::all();
     }
-} 
+}

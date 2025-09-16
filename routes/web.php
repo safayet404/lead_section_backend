@@ -20,8 +20,6 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
-use App\Models\ChannelPartner;
-use App\Models\ExpressApplication;
 use App\Models\Role;
 use Illuminate\Support\Facades\Route;
 
@@ -137,36 +135,31 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('/single-note', [NoteController::class, 'SingleNote']);
 });
 
-
-
 // Express Application
 
-Route::post('/express-application',[ExpressApplicationController::class, 'CreateApplication']);
+Route::post('/express-application', [ExpressApplicationController::class, 'CreateApplication']);
 Route::get('/express-list', [ExpressApplicationController::class, 'ExpressApplicationList']);
-Route::get('/single-express',[ExpressApplicationController::class,'SingleExpressApplication']);
+Route::get('/single-express', [ExpressApplicationController::class, 'SingleExpressApplication']);
 
+// University
 
-// University 
-
-Route::post('/create-university', [UniversityController::class,'CreateUniversity'] );
-Route::get('/all-university', [UniversityController::class,'AllUniversity'] );
+Route::post('/create-university', [UniversityController::class, 'CreateUniversity']);
+Route::get('/all-university', [UniversityController::class, 'AllUniversity']);
 
 // Course Type
 
-Route::post('/create-type', [CourseTypeController::class,'CreateCourseType'] );
-Route::get('/all-course-type', [CourseTypeController::class,'AllCourseType'] );
+Route::post('/create-type', [CourseTypeController::class, 'CreateCourseType']);
+Route::get('/all-course-type', [CourseTypeController::class, 'AllCourseType']);
 
 // Intake
 
+Route::post('/create-intake', [IntakeController::class, 'CreateIntake']);
+Route::get('/all-intake', [IntakeController::class, 'AllIntake']);
 
-Route::post('/create-intake', [IntakeController::class,'CreateIntake'] );
-Route::get('/all-intake', [IntakeController::class,'AllIntake'] );
+// Course
 
-
-// Course 
-
-Route::post('/create-course', [CourseController::class,'CreateCourse'] );
-Route::get('/all-course', [CourseController::class,'AllCourse'] );
+Route::post('/create-course', [CourseController::class, 'CreateCourse']);
+Route::get('/all-course', [CourseController::class, 'AllCourse']);
 
 // Course Filtering
 
@@ -178,36 +171,31 @@ Route::get('/universities/{countryId}/{intakeId}/{courseTypeId}', [CourseControl
 
 Route::get('/courses/{countryId}/{intakeId}/{universityId}/{courseTypeId}', [CourseController::class, 'Courses']);
 
-
 // Channel Partner
 
-Route::post('/create-channel', [ChannelPartnerController::class,'CreateChannelPartner'] );
-Route::get('/all-channel', [ChannelPartnerController::class,'AllChannelPartner'] );
-
+Route::post('/create-channel', [ChannelPartnerController::class, 'CreateChannelPartner']);
+Route::get('/all-channel', [ChannelPartnerController::class, 'AllChannelPartner']);
 
 // Application Status
 
-Route::post('/create-application-status', [ApplicationStatusController::class,'CreateApplicationStatus'] );
-Route::get('/all-application-status', [ApplicationStatusController::class,'AllStatus'] );
+Route::post('/create-application-status', [ApplicationStatusController::class, 'CreateApplicationStatus']);
+Route::get('/all-application-status', [ApplicationStatusController::class, 'AllStatus']);
 
 // Students
 
-Route::post('/create-student', [StudentController::class,'CreateStudent'] );
-Route::get('/all-students', [StudentController::class,'AllStudents'] );
+Route::post('/create-student', [StudentController::class, 'CreateStudent']);
+Route::get('/all-students', [StudentController::class, 'AllStudents']);
 
 // Applications
 
-Route::post('/create-application', [ApplicationController::class,'CreateApplication'] );
-Route::get('/all-application', [ApplicationController::class,'ApplicationList'] );
+Route::post('/create-application', [ApplicationController::class, 'CreateApplication']);
+Route::get('/all-application', [ApplicationController::class, 'ApplicationList']);
 
 Route::middleware([TokenVerificationMiddleware::class])->group(function () {
-  
-Route::post('/create-application', [ApplicationController::class,'CreateApplication'] );
-Route::post('/student-application', [ApplicationController::class,'CreateStudentWithApplication'] );
-Route::get('/all-application', [ApplicationController::class,'ApplicationList'] );
-Route::get('/single-application/{id}', [ApplicationController::class,'SingleApplication'] );
 
-
+    Route::post('/create-application', [ApplicationController::class, 'CreateApplication']);
+    Route::post('/student-application', [ApplicationController::class, 'CreateStudentWithApplication']);
+    Route::get('/all-application', [ApplicationController::class, 'ApplicationList']);
+    Route::get('/single-application/{id}', [ApplicationController::class, 'SingleApplication']);
 
 });
-

@@ -16,6 +16,6 @@ class ApplicationFile extends Model
 
     public function application()
     {
-        return $this->belongsTo(ExpressApplication::class,'application_id');
+        return $this->belongsTo(ExpressApplication::class, 'application_id');
     }
 }

@@ -13,13 +13,14 @@ class UniversityController extends Controller
         try {
             $validated = $request->validate([
                 'name' => 'string',
-                'country_id' => 'exists:countries,id'
+                'country_id' => 'exists:countries,id',
             ]);
 
             University::create([
                 'name' => $validated['name'],
-                'country_id' => $validated['country_id']
+                'country_id' => $validated['country_id'],
             ]);
+
             return response()->json(['status' => 'success', 'message' => 'University Created Succesfully']);
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
@@ -29,7 +30,8 @@ class UniversityController extends Controller
     public function AllUniversity(Request $request)
     {
         $list = University::all();
-                    return response()->json(['status' => 'success', 'list' => $list]);
+
+        return response()->json(['status' => 'success', 'list' => $list]);
 
     }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Application extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'student_id',
         'country_id',
         'intake_id',
@@ -19,10 +19,10 @@ class Application extends Model
         'branch_id',
         'created_by',
         'counsellor_phone',
-        'counsellor_email'
+        'counsellor_email',
     ];
 
-      public function files()
+    public function files()
     {
         return $this->hasMany(StudentApplicationFile::class, 'application_id');
     }
@@ -47,7 +47,8 @@ class Application extends Model
         return $this->belongsTo(CourseType::class);
     }
 
-    public function university(){
+    public function university()
+    {
         return $this->belongsTo(University::class);
     }
 
@@ -69,9 +70,10 @@ class Application extends Model
     public function channelPartner()
     {
         return $this->belongsTo(ChannelPartner::class);
-    } 
+    }
+
     public function user()
     {
-        return $this->belongsTo(User::class,'created_by');
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

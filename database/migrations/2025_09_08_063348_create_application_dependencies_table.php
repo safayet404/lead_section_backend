@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        
+
         Schema::create('intakes', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // e.g. "January 2026"
@@ -20,7 +20,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-      
         Schema::create('universities', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -29,14 +28,12 @@ return new class extends Migration
             $table->timestamps();
         });
 
-    
         Schema::create('course_types', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Graduate, Post Graduate, PhD etc.
             $table->timestamps();
         });
 
-  
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('country_id')->constrained('countries')->cascadeOnDelete();

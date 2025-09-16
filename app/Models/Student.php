@@ -18,7 +18,7 @@ class Student extends Model
         'address',
         'city',
         'gender',
-        'visa_refusal'
+        'visa_refusal',
     ];
 
     public function branch()

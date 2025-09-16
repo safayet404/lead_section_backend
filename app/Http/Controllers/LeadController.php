@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\LeadsImport;
 use App\Models\Lead;
 use App\Models\User;
 use Carbon\Carbon;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class LeadController extends Controller
 {
@@ -37,7 +34,7 @@ class LeadController extends Controller
                 'created_by' => 'nullable|exists:users,id',
                 'lead_type' => 'nullable|exists:lead_types,id',
                 'event_id' => 'nullable|exists:events,id',
-                'assigned_at' => 'nullable'
+                'assigned_at' => 'nullable',
 
             ]);
 
@@ -71,63 +68,60 @@ class LeadController extends Controller
     }
 
     public function uploadLeads(Request $request)
-{
-   
+    {
 
-    $validated =  $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv|max:10240',
-        'lead_type' => 'required|exists:lead_types,id',
-        'lead_branch' => 'required|exists:branches,id',
-        'lead_country' => 'nullable|exists:countries,id',
-        'event_id' => 'nullable|exists:events,id',
+        $validated = $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
+            'lead_type' => 'required|exists:lead_types,id',
+            'lead_branch' => 'required|exists:branches,id',
+            'lead_country' => 'nullable|exists:countries,id',
+            'event_id' => 'nullable|exists:events,id',
 
-    ]);
-
-    try {
-        $file = $validated['file'];
-        $spreadsheet = IOFactory::load($file->getRealPath());
-        $sheet = $spreadsheet->getActiveSheet();
-        $rows = $sheet->toArray();
-
-        $header = array_shift($rows);
-        $leadsCreated = 0;
-
-        foreach ($rows as $row) {
-            $leadData = array_combine($header, $row);
-
-            $data = [
-                'lead_date' => $leadData['lead_date'],
-                'name' => $leadData['name'],
-                'email' => $leadData['email'],
-                'phone' => $leadData['phone'],
-                'interested_course' => $leadData['interested_course'],
-                'interested_country' => $leadData['interested_country'],
-                'current_qualification' => $leadData['current_qualification'],
-                'ielts_or_english_test' => $leadData['ielts_or_english_test'] ?? null,
-                'soruce' => $leadData['soruce'] ?? null,
-              
-                'lead_type' => $validated['lead_type'],
-                'lead_country' => $validated['lead_country'] ?? null,
-                'lead_branch' => $validated['lead_branch'] ,
-                'event_id' => $validated['event_id'] ?? null,
-                'created_by' => $request->header('id')
-            ];
-           
-            Lead::create($data);
-            $leadsCreated++;
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => "Successfully uploaded and created $leadsCreated leads."
         ]);
 
-    } catch (Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        try {
+            $file = $validated['file'];
+            $spreadsheet = IOFactory::load($file->getRealPath());
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+
+            $header = array_shift($rows);
+            $leadsCreated = 0;
+
+            foreach ($rows as $row) {
+                $leadData = array_combine($header, $row);
+
+                $data = [
+                    'lead_date' => $leadData['lead_date'],
+                    'name' => $leadData['name'],
+                    'email' => $leadData['email'],
+                    'phone' => $leadData['phone'],
+                    'interested_course' => $leadData['interested_course'],
+                    'interested_country' => $leadData['interested_country'],
+                    'current_qualification' => $leadData['current_qualification'],
+                    'ielts_or_english_test' => $leadData['ielts_or_english_test'] ?? null,
+                    'soruce' => $leadData['soruce'] ?? null,
+
+                    'lead_type' => $validated['lead_type'],
+                    'lead_country' => $validated['lead_country'] ?? null,
+                    'lead_branch' => $validated['lead_branch'],
+                    'event_id' => $validated['event_id'] ?? null,
+                    'created_by' => $request->header('id'),
+                ];
+
+                Lead::create($data);
+                $leadsCreated++;
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => "Successfully uploaded and created $leadsCreated leads.",
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
     }
-}
-
-
 
     public function LeadList(Request $request)
     {
@@ -148,16 +142,15 @@ class LeadController extends Controller
 
         $query->orderByDesc('assigned_at');
 
-        $list = $query->get()->map(function($lead) {
-    $lead->is_new = false;
+        $list = $query->get()->map(function ($lead) {
+            $lead->is_new = false;
 
-    if ($lead->assigned_at instanceof Carbon) {
-        $lead->is_new = $lead->assigned_at->gt(now()->subHours(24));
-    }
+            if ($lead->assigned_at instanceof Carbon) {
+                $lead->is_new = $lead->assigned_at->gt(now()->subHours(24));
+            }
 
-    return $lead;
-});
-
+            return $lead;
+        });
 
         return response()->json(['status' => 'success', 'list' => $list]);
     }
@@ -213,7 +206,7 @@ class LeadController extends Controller
                 'assign_id',
                 'lead_country',
                 'lead_branch',
-                'assigned_at'
+                'assigned_at',
             ]);
             $lead->fill($data)->save();
 
@@ -337,7 +330,7 @@ class LeadController extends Controller
                     'assigned_user' => $assignment['user_id'],
                     'assigned_branch' => $validated['assign_branch'],
                     'assign_id' => 2,
-                    'assigned_at' => now()
+                    'assigned_at' => now(),
                 ]);
             }
 
@@ -402,7 +395,7 @@ class LeadController extends Controller
                     'assigned_user' => $userId,
                     'assigned_branch' => $validated['assign_branch'],
                     'assign_id' => 2,
-                     'assigned_at' => now()
+                    'assigned_at' => now(),
                 ]);
             }
 
@@ -423,12 +416,12 @@ class LeadController extends Controller
         $userId = $request->header('id');
         $user = User::with('branch')->findOrFail($userId);
 
-          if ($user->role_id != 3) {
-        return response()->json([
-            'status' => 'failed',
-            'message' => 'Unauthorized: Only branch managers can access this resource.'
-        ], 403);
-    }
+        if ($user->role_id != 3) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Unauthorized: Only branch managers can access this resource.',
+            ], 403);
+        }
 
         $branchId = $user->branch_id;
 
@@ -469,18 +462,16 @@ class LeadController extends Controller
             return $query;
         };
 
-           $applyLeadTypeFilter = function($query) use($leadType)
-        {
-            if($leadType !== 'all')
-            {
-                $query->where('lead_type' ,$leadType);
+        $applyLeadTypeFilter = function ($query) use ($leadType) {
+            if ($leadType !== 'all') {
+                $query->where('lead_type', $leadType);
             }
 
             return $query;
         };
 
         // Total leads assigned
-      
+
         $leadsAssigned = $applyDateFilter(
             $applyLeadTypeFilter(
 
@@ -501,8 +492,8 @@ class LeadController extends Controller
             $applyLeadTypeFilter(
                 Lead::where('assigned_branch', $branchId)
                     ->where('status_id', $status_initial)
-                )
-                
+            )
+
         )->count();
 
         // Converted leads
@@ -521,8 +512,7 @@ class LeadController extends Controller
 
                 Lead::where('assigned_branch', $branchId)
                     ->where('status_id', $status_followup)
-            )
-                ,
+            ),
             'updated_at'
         )->count();
 
@@ -568,7 +558,7 @@ class LeadController extends Controller
         // Response
         return response()->json([
             'summary' => [
-            
+
                 'assigned' => $leadsAssigned,
                 'contacted' => $contacted,
                 'converted' => $converted,
@@ -585,17 +575,15 @@ class LeadController extends Controller
     public function AdminReport(Request $request)
     {
 
-            $userId = $request->header('id');
-                $user = User::findOrFail($userId);
+        $userId = $request->header('id');
+        $user = User::findOrFail($userId);
 
-              if ($user->role_id != 1) {
-        return response()->json([
-            'status' => 'failed',
-            'message' => 'Unauthorized: Only branch managers can access this resource.'
-        ], 403);
-    }
-
-
+        if ($user->role_id != 1) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Unauthorized: Only branch managers can access this resource.',
+            ], 403);
+        }
 
         $status_initial = 1;
         $status_converted = 11;
@@ -633,11 +621,9 @@ class LeadController extends Controller
             return $query;
         };
 
-        $applyLeadTypeFilter = function($query) use($leadType)
-        {
-            if($leadType !== 'all')
-            {
-                $query->where('lead_type' ,$leadType);
+        $applyLeadTypeFilter = function ($query) use ($leadType) {
+            if ($leadType !== 'all') {
+                $query->where('lead_type', $leadType);
             }
 
             return $query;
@@ -668,7 +654,7 @@ class LeadController extends Controller
 
                 Lead::where('status_id', '!=', $status_initial)
             ),
-                'updated_at'
+            'updated_at'
         )->count();
 
         $pending = $applyDateFilter(

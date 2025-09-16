@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-     public function CreateCourse(Request $request)
+    public function CreateCourse(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -23,16 +23,16 @@ class CourseController extends Controller
                 'course_type_id' => 'string|exists:course_types,id',
                 'country_id' => 'string|exists:countries,id',
                 'course_duration' => 'string',
-               'tution_fee' => 'nullable|numeric',
+                'tution_fee' => 'nullable|numeric',
 
-                  'academic_requirement' => 'nullable|string',
-    'english_requirement' => 'nullable|string',
+                'academic_requirement' => 'nullable|string',
+                'english_requirement' => 'nullable|string',
             ]);
 
             Course::create([
                 'name' => $validated['name'],
                 'university_id' => $validated['university_id'],
-              
+
                 'intake_id' => $validated['intake_id'],
                 'course_type_id' => $validated['course_type_id'],
                 'country_id' => $validated['country_id'],
@@ -41,42 +41,47 @@ class CourseController extends Controller
                 'academic_requirement' => $validated['academic_requirement'],
                 'english_requirement' => $validated['english_requirement'],
             ]);
+
             return response()->json(['status' => 'success', 'message' => 'Course Created Succesfully']);
         } catch (Exception $e) {
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
-     public function AllCourse(Request $request)
+    public function AllCourse(Request $request)
     {
         $list = Course::all();
-                    return response()->json(['status' => 'success', 'list' => $list]);
+
+        return response()->json(['status' => 'success', 'list' => $list]);
 
     }
 
-     public function Countries()
+    public function Countries()
     {
         return Country::all();
     }
 
-    public function IntakeByCountry($countryId){
-        return Intake::whereHas('courses', fn($q) => $q->where('country_id',$countryId))->get();
-    }
-
-      public function CourseTypes($countryId,$intakeId){
-        return CourseType::whereHas('courses', function ($q) use ($countryId,$intakeId){
-            $q->where('country_id',$countryId)->where('intake_id',$intakeId);
-        } )->get();
-    }
-
-
-    public function Universities($countryId,$intakeId,$courseTypeId){
-        return University::where('country_id',$countryId)->whereHas('courses',function($q) use ($intakeId,$courseTypeId){$q->where('intake_id',$intakeId)->where('course_type_id',$courseTypeId);} )->get();
-    }
-
-  
-    public function Courses($countryId,$intakeId,$universityId,$courseTypeId)
+    public function IntakeByCountry($countryId)
     {
-        return Course::with(['university','country','intake','courseType'])->where('country_id',$countryId)->where('intake_id',$intakeId)->where('university_id',$universityId)->where('course_type_id',$courseTypeId)->get();
+        return Intake::whereHas('courses', fn ($q) => $q->where('country_id', $countryId))->get();
+    }
+
+    public function CourseTypes($countryId, $intakeId)
+    {
+        return CourseType::whereHas('courses', function ($q) use ($countryId, $intakeId) {
+            $q->where('country_id', $countryId)->where('intake_id', $intakeId);
+        })->get();
+    }
+
+    public function Universities($countryId, $intakeId, $courseTypeId)
+    {
+        return University::where('country_id', $countryId)->whereHas('courses', function ($q) use ($intakeId, $courseTypeId) {
+            $q->where('intake_id', $intakeId)->where('course_type_id', $courseTypeId);
+        })->get();
+    }
+
+    public function Courses($countryId, $intakeId, $universityId, $courseTypeId)
+    {
+        return Course::with(['university', 'country', 'intake', 'courseType'])->where('country_id', $countryId)->where('intake_id', $intakeId)->where('university_id', $universityId)->where('course_type_id',$courseTypeId)->get();
     }
 }

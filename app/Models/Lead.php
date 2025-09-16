@@ -26,7 +26,7 @@ class Lead extends Model
         'assign_id',
         'lead_country',
         'lead_branch',
-        'assigned_at'
+        'assigned_at',
     ];
 
     public function status()
@@ -75,7 +75,6 @@ class Lead extends Model
     }
 
     protected $casts = [
-    'assigned_at' => 'datetime',
-];
-
+        'assigned_at' => 'datetime',
+    ];
 }

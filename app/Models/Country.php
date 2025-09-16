@@ -10,11 +10,13 @@ class Country extends Model
 
     protected $fillable = ['name'];
 
-      public function universities() {
+    public function universities()
+    {
         return $this->hasMany(University::class);
     }
 
-    public function courses() {
+    public function courses()
+    {
         return $this->hasMany(Course::class);
     }
 }

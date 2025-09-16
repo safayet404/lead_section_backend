@@ -16,21 +16,20 @@ class ChannelPartnerController extends Controller
                 'contact_person' => 'required|string',
                 'email' => 'required|email',
                 'phone' => 'required|string',
-                'address' => 'required|string'
+                'address' => 'required|string',
             ]);
 
-
             ChannelPartner::create([
-                  'name' => $validated['name'],
+                'name' => $validated['name'],
                 'contact_person' => $validated['contact_person'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
-                'address' => $validated['address']
+                'address' => $validated['address'],
             ]);
 
             return response()->json(['status' => 'success', 'message' => 'Channel Partner Created']);
         } catch (Exception $e) {
-            
+
             return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }

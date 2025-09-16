@@ -6,9 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Intake extends Model
 {
-      protected $fillable = ['name'];
+    protected $fillable = ['name'];
 
-      public function courses() {
+    public function courses()
+    {
         return $this->hasMany(Course::class);
     }
 }

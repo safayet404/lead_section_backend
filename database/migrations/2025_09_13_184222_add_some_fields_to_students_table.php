@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::table('students', function (Blueprint $table) {
             $table->text('address')->nullable();
             $table->string('city')->nullable();
-            $table->enum('gender',['male','female'])->nullable();
-            $table->enum('visa_refusal',['yes','no'])->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->enum('visa_refusal', ['yes', 'no'])->nullable();
 
         });
     }

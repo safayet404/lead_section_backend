@@ -12,36 +12,36 @@ class StudentController extends Controller
     {
         try {
             $validated = $request->validate([
-                'first_name' => 'required|string', 
-                'last_name' => 'required|string', 
-                'email' => 'required|email', 
-                'phone' => 'required|string', 
-                'date_of_birth' => 'required|string', 
-                'passport_number' => 'required|string', 
-                'passport_country' => 'required|string', 
-                           'branch_id'        => 'nullable|exists:branches,id', // ✅ fixed
+                'first_name' => 'required|string',
+                'last_name' => 'required|string',
+                'email' => 'required|email',
+                'phone' => 'required|string',
+                'date_of_birth' => 'required|string',
+                'passport_number' => 'required|string',
+                'passport_country' => 'required|string',
+                'branch_id' => 'nullable|exists:branches,id', // ✅ fixed
 
             ]);
 
             $student = Student::create([
-                'first_name' => $validated['first_name'], 
-                'last_name' => $validated['last_name'], 
-                'email' => $validated['email'], 
-                'phone' => $validated['phone'], 
-                'date_of_birth' =>$validated['date_of_birth'], 
-                'passport_number' => $validated['passport_number'], 
-                'passport_country' => $validated['passport_country'], 
-                           'branch_id'        => $validated['branch_id'] ?? null, // ✅ actual value
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+                'date_of_birth' => $validated['date_of_birth'],
+                'passport_number' => $validated['passport_number'],
+                'passport_country' => $validated['passport_country'],
+                'branch_id' => $validated['branch_id'] ?? null, // ✅ actual value
 
             ]);
 
             return response()->json([
-                'status' => "success",
-                'message' => "Student Created Successfully",
-                'id' => $student->id
+                'status' => 'success',
+                'message' => 'Student Created Successfully',
+                'id' => $student->id,
             ]);
         } catch (Exception $e) {
-              return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
+            return response()->json(['status' => 'failed', 'message' => $e->getMessage()]);
         }
     }
 
@@ -49,5 +49,4 @@ class StudentController extends Controller
     {
         return Student::all();
     }
-
 }

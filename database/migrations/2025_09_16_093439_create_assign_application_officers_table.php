@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('application_statuses', function (Blueprint $table) {
+        Schema::create('assign_application_officers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('color')->nullable();
-            $table->boolean('status')->default(1);
+          
+    $table->foreignId('application_id')->constrained('applications')->cascadeOnUpdate()->restrictOnDelete();
+    $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->restrictOnDelete();
+   
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('application_statuses');
+        Schema::dropIfExists('assign_application_officers');
     }
 };

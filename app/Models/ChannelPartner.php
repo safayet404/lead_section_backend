@@ -14,6 +14,4 @@ class ChannelPartner extends Model
         'address',
         'status',
     ];
-
-    
 }
