@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\ApplicationStatusController;
+use App\Http\Controllers\AssignAoController;
+use App\Http\Controllers\AssignCoController;
 use App\Http\Controllers\AssignTypeController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ChannelPartnerController;
@@ -199,3 +201,9 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
     Route::get('/single-application/{id}', [ApplicationController::class, 'SingleApplication']);
 
 });
+
+Route::post('/assign-ao', [AssignAoController::class, 'AssignAo']);
+Route::post('/assign-ao-list', [AssignAoController::class, 'AssignList']);
+
+Route::post('/assign-co', [AssignCoController::class, 'AssignCo']);
+Route::post('/assign-co-list', [AssignAoController::class, 'AssignList']);

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AssignCoController extends Controller
 {
-      public function AssignAo(Request $request)
+      public function AssignCo(Request $request)
     {
         try {
             $validated = $request->validate([
