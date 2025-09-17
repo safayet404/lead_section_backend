@@ -203,7 +203,9 @@ Route::middleware([TokenVerificationMiddleware::class])->group(function () {
 });
 
 Route::post('/assign-ao', [AssignAoController::class, 'AssignAo']);
-Route::post('/assign-ao-list', [AssignAoController::class, 'AssignList']);
+Route::get('/assign-ao-list', [AssignAoController::class, 'AssignList']);
+Route::get('/single-assign/{applicationId}',[AssignAoController::class,'SingleApplication']);
+
 
 Route::post('/assign-co', [AssignCoController::class, 'AssignCo']);
-Route::post('/assign-co-list', [AssignAoController::class, 'AssignList']);
+Route::get('/assign-co-list', [AssignAoController::class, 'AssignList']);

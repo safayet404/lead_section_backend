@@ -31,4 +31,9 @@ class AssignAoController extends Controller
     public function AssignList(){
         return AssignApplicationOfficer::all();
     }
+
+      public function SingleApplication($applicationId)
+    {
+        return AssignApplicationOfficer::where('application_id',$applicationId)->get();
+    }
 }

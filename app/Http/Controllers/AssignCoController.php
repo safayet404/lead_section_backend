@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssignApplicationOfficer;
 use App\Models\AssignComplianceOfficer;
 use Exception;
 use Illuminate\Http\Request;
@@ -31,4 +32,6 @@ class AssignCoController extends Controller
     public function AssignList(){
         return AssignComplianceOfficer::all();
     }
+
+  
 }
