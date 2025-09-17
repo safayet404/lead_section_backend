@@ -27,6 +27,12 @@ class Application extends Model
         return $this->hasMany(StudentApplicationFile::class, 'application_id');
     }
 
+    public function assignedOfficer()
+    {
+return $this->hasOneThrough(User::class, AssignApplicationOfficer::class, 'application_id', 'id', 'id', 'user_id');
+
+    }
+
     public function student()
     {
         return $this->belongsTo(Student::class);

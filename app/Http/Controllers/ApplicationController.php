@@ -160,7 +160,6 @@ class ApplicationController extends Controller
                 }
             }
 
-            // Reload application with files & add full URL for each
             $application->load('files');
             $application->files->transform(function ($file) {
                 $file->file_url = Storage::url($file->file_path);
@@ -194,12 +193,12 @@ class ApplicationController extends Controller
 
     public function ApplicationList(Request $request)
     {
-        return Application::with('student', 'country', 'files', 'user', 'intake', 'courseType', 'university', 'course', 'branch', 'applicationStatus', 'channelPartner')->latest()->get();
+        return Application::with('student', 'country', 'files','assignedOfficer' ,  'user', 'intake', 'courseType', 'university', 'course', 'branch', 'applicationStatus', 'channelPartner')->latest()->get();
 
     }
 
     public function SingleApplication($id)
     {
-        return Application::with('student', 'country', 'files', 'user', 'intake', 'courseType', 'university', 'course', 'branch', 'applicationStatus', 'channelPartner')->find($id);
+        return Application::with('student', 'country', 'assignedOfficer' , 'files', 'user', 'intake', 'courseType', 'university', 'course', 'branch', 'applicationStatus', 'channelPartner')->find($id);
     }
 }
